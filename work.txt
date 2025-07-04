@@ -1,0 +1,6 @@
+1. auth/forgotpasword.php
+    - mail sending remaining
+
+2. account/dashboard.php
+    (a) Admin
+    - anlysis and Profile loading remaining

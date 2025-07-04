@@ -24,7 +24,7 @@ class Config
 {
     private $con;
 
-    function construct($database)
+    function __construct($database)
     {
         $dsn = "mysql:host=localhost;dbname=$database";
         $username = "root";
@@ -36,21 +36,47 @@ class Config
             echo "Connection failed: " . $e->getMessage();
         }
     }
+
+    // Login
+    function login($email)
+    {
+        $stmt = $this->con->prepare("SELECT * FROM auth WHERE mail = :em");
+        $stmt->bindParam(":em", $email);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // forgot password via Mail
+    function mailSendForPassword($email)
+    {
+        $stmt = $this->con->prepare("SELECT mail FROM auth WHERE mail = :em");
+        $stmt->bindParam(':em', $email);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getConnection()
+    {
+        return $this->con;
+    }
 }
 
 // table queries
-// $obj = new Config($database);
+$obj = new Config($database);
 $con = $obj->getConnection();
 
 // Create auth table
 try {
     $create_auth = "CREATE TABLE IF NOT EXISTS auth (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    userimage VARCHAR(256) NOT NULL,
     firstname VARCHAR(256) NOT NULL,
     middlename VARCHAR(256) NOT NULL,
     lastname VARCHAR(256) NOT NULL,
     mail VARCHAR(256) NOT NULL,
     password VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
     authrole VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP NOT NULL,
     status VARCHAR(255),
@@ -59,16 +85,4 @@ try {
     $con->exec($create_auth);
 } catch (PDOException $e) {
     echo "Error creating table: " . $e->getMessage();
-}
-
-try {
-    $create_student = "CREATE TABLE IF NOT EXISTS students(
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        enrollid VARCHAR(100) NOT NULL,
-        branch VARCHAR(100) NOT NULL,
-        
-    )";
-    $con->exec($create_student);
-} catch (PDOException $e) {
-    echo "Error : " . $e->getMessage();
 }
