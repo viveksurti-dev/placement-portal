@@ -1,10 +1,19 @@
-body {
-    background-color: rgb(236, 242, 255);
+:root {
+    --primary-btn: #002B6A;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    background-color: #f4f4f4;
+}
+
+/* rest of the styles remain unchanged */
 .container-dashboard {
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
 }
 
 .caption {
@@ -32,6 +41,37 @@ body {
     justify-content: center;
     align-items: center;
     text-transform: capitalize;
+    padding: 5px;
+    border-bottom: 1px solid gray;
+}
+
+.dashboard-profile .profile-content .container-total-info .main-info {
+    display: flex;
+    justify-content: center;
+}
+
+.main-info .info-icon {
+    height: auto;
+    max-height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 25px;
+    color: #7267ef;
+
+}
+
+.main-info .info-icon i {
+    height: auto;
+    max-height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    object-fit: cover;
+    font-weight: bold;
 }
 
 .container-dashboard .dashboard-profile .profile-content .profile-image {
@@ -59,4 +99,89 @@ body {
     font-size: 12px;
     color: blueviolet;
     font-weight: 600;
+}
+
+.dashboard-profile .reminders {
+    height: 300px;
+}
+
+/* alert */
+
+.alert-wrapper {
+    position: absolute;
+    z-index: 10;
+    right: 10px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alert-container {
+    width: 250px;
+    padding: 10px;
+    background-color: rgb(199, 196, 254);
+    border-radius: 5px;
+    color: rgb(29, 0, 86);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    opacity: 1;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    right: -400px;
+}
+
+.slide-in {
+    animation: slide-in 0.5s forwards;
+}
+
+@keyframes slide-in {
+    0% {
+        right: -400px;
+        opacity: 0;
+    }
+
+    100% {
+        right: 0;
+        opacity: 1;
+    }
+}
+
+.slide-out {
+    animation: slide-out 0.6s forwards;
+}
+
+@keyframes slide-out {
+    0% {
+        right: 0;
+        opacity: 1;
+    }
+
+    100% {
+        right: -400px;
+        opacity: 0;
+    }
+}
+
+/* Graph */
+.graph-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 75%;
+    overflow: hidden;
+}
+
+#comboChart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .graph-container {
+        padding-bottom: 50%;
+
+    }
 }

@@ -46,6 +46,25 @@ class Config
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    function register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password)
+    {
+        $ins = $this->con->prepare("INSERT INTO auth 
+        (firstname, middlename, lastname, mail, gender, city, state, contact, authrole, password) 
+        VALUES 
+        (:fn, :mn, :ln, :em, :gn, :ct, :st, :co, :ro, :pw)");
+        $ins->bindParam(':fn', $firstname);
+        $ins->bindParam(':mn', $middlename);
+        $ins->bindParam(':ln', $lastname);
+        $ins->bindParam(':em', $email);
+        $ins->bindParam(':gn', $gender);
+        $ins->bindParam(':ct', $city);
+        $ins->bindParam(':st', $state);
+        $ins->bindParam(':co', $contact);
+        $ins->bindParam(':ro', $role);
+        $ins->bindParam(':pw', $password);
+        return $ins->execute();
+    }
+
     // forgot password via Mail
     function mailSendForPassword($email)
     {
@@ -73,6 +92,8 @@ try {
     firstname VARCHAR(256) NOT NULL,
     middlename VARCHAR(256) NOT NULL,
     lastname VARCHAR(256) NOT NULL,
+    gender VARCHAR(20) NOT NULL,
+    contact VARCHAR(15) NOT NULL,
     mail VARCHAR(256) NOT NULL,
     password VARCHAR(100) NOT NULL,
     city VARCHAR(100) NOT NULL,

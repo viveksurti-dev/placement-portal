@@ -26,12 +26,16 @@ if (isset($_POST['logout'])) {
 
 <head>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top"
+        style=" box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">Placement Portal</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -40,10 +44,10 @@ if (isset($_POST['logout'])) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="<?php echo BASE_URL . 'account/dashboard.php' ?>">Dashboard</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -58,9 +62,6 @@ if (isset($_POST['logout'])) {
                             </li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li>
                 </ul>
 
@@ -78,4 +79,32 @@ if (isset($_POST['logout'])) {
             </div>
         </div>
     </nav>
+
+    <div class="alert-wrapper">
+        <?php if (!empty($_SESSION['alert'])) {
+            foreach ($_SESSION['alert'] as $alertMessage) { ?>
+                <div class="alert-container slide-in">
+                    <div class="alert-head">
+                        <small> Alert!</small>
+                    </div>
+                    <hr />
+                    <div class="alert-body">
+                        <?php echo $alertMessage; ?>
+                    </div>
+                </div>
+        <?php }
+            unset($_SESSION['alert']);
+        } ?>
+    </div>
+    <script>
+        const alerts = document.querySelectorAll('.alert-container');
+
+        alerts.forEach((alert, index) => {
+            setTimeout(() => {
+                alert.classList.remove('slide-in');
+                alert.classList.add('slide-out');
+                setTimeout(() => alert.remove(), 600);
+            }, 5000 + index * 200);
+        });
+    </script>
 </body>

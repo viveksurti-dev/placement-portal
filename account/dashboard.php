@@ -15,61 +15,239 @@ if ($isLoggedIn === false && isset($_SESSION['mail'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal - Dashboard</title>
+
 </head>
 
 <body>
     <section>
         <!-- Dashboard  -->
-        <?php
-        // Admin Dashboard
-        if ($auth['authrole'] === 'admin') {
-        ?>
-        <section class="container-dashboard">
-            <div class="dashboard-content col-md-8">
+        <section class="container-dashboard ">
+            <div class="dashboard-content col-md-9 d-flex flex-wrap">
+                <!-- Total Info -->
+                <div class="col-md-6 p-3 container-total-info">
+                    <div class="card p-3 mb-4 shadow-sm">
+                        <div class="container">
+                            <div class="row">
+                                <!-- First Column -->
+                                <div class="col-md-4 border-end border-gray">
+                                    <div class="main-info d-flex flex-column pt-3 pb-3 text-center">
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Second Column -->
+                                <div class="col-md-4 border-end border-gray">
+                                    <div class="main-info d-flex flex-column pt-3 pb-3 text-center">
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Third Column -->
+                                <div class="col-md-4">
+                                    <div class="main-info d-flex flex-column pt-3 pb-3 text-center">
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex mt-3 mb-3">
+                                            <div class="info-icon col-2">
+                                                <i class="bi bi-people"></i>
+                                            </div>
+                                            <div class="info-content col-10 d-flex flex-column">
+                                                <div class="info-numbers">
+                                                    <strong>00</strong>
+                                                </div>
+                                                <div class="info-title caption">
+                                                    <small>students</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- section : 2 -->
+                    <div class="d-flex flex-wrap">
+                        <div class="col-md-6 p-1">
+                            <div class="card p-2">
+                                data
+                            </div>
+                        </div>
+                        <div class="col-md-6 p-1">
+                            <div class="card p-2">
+                                data
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Graph of Info -->
+                <div class="col-12 col-md-6 mt-3 container-info-graph">
+                    <div class="card p-3 mb-4 shadow-sm">
+                        <strong>Departwise Monthly Report</strong>
+                        <hr>
+
+                        <!-- Graph Container -->
+                        <div class="graph-container">
+                            <canvas id="comboChart" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
 
             </div>
-            <div class="dashboard-profile col-md-4">
+            <div class="dashboard-profile col-md-3">
                 <div class="profile-content">
                     <div class="profile-menus">
                         <!-- menus on right side -->
                     </div>
                     <div class="profile-image">
                         <?php if ($auth['userimage']) { ?>
-
+                            <img src="<?php echo BASE_URL . 'uploads/auth/' . $auth['userimage']; ?>" alt="User Image">
                         <?php } else { ?>
-                        <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" alt="User Image">
+                            <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" alt="User Image">
                         <?php } ?>
                     </div>
                     <div class="profile-name mt-2">
                         <strong><?php echo $auth['firstname'] . ' ' . $auth['lastname']; ?></strong>
                     </div>
                     <div class="profile-role">
-                        <small class="caption"><?php echo $auth['authrole'] ?></small>
+                        <small class="caption"><?php echo $auth['authrole'] ? $auth['authrole'] : " "; ?></small>
                     </div>
                     <div class="profile-location">
-                        <small><?php echo $auth['city'] . ', ' . $auth['state']; ?></small>
+                        <small><?php echo $auth['city'] ? $auth['city'] : " ";
+                                if ($auth['state']) {
+                                    echo ', ';
+                                }
+                                echo $auth['state'] ? $auth['state'] : " " ?></small>
                     </div>
                 </div>
-                <div class="option">
 
+                <!-- options -->
+                <div class="option">
+                    <a href="<?php echo BASE_URL ?>admin/register.php" class="btn btn-outline-danger">Manage Users</a>
                 </div>
                 <div class="reminders">
-                    <div class="container-reminder d-flex flex-wrap">
-
+                    <div class="container-reminder">
+                        <div class="reminder">
+                            <div class="reminder-title">
+                                <h5>Reminders</h5>
+                            </div>
+                            <div class="reminder-content">
+                                <p>There are no reminders set.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <?php } else if ($auth['authrole'] == 'company') {
-            echo 'company';
-        } else if ($auth['authrole'] == 'coordinator') {
-            echo 'mentor';
-        } else {
-            echo 'student';
-        }
-        ?>
     </section>
 </body>
 
 </html>
+
+<script>
+    // Wait until the DOM is ready
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the canvas element
+        var ctx = document.getElementById('comboChart').getContext('2d');
+
+        // Create a new Chart
+        var myComboChart = new Chart(ctx, {
+            type: 'bar', // Start with 'bar' type for bars
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'], // X-axis labels
+                datasets: [{
+                    label: 'Bar Dataset',
+                    data: [12, 19, 3, 5, 2, 3, 9], // Data for bars
+                    backgroundColor: 'rgba(114, 103, 239, 0.85)', // Bar color
+                    borderColor: 'rgb(114, 103, 239)', // Bar border color
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Line Dataset',
+                    data: [7, 11, 5, 8, 6, 3, 4], // Data for line
+                    type: 'line', // Specify type as 'line' for the second dataset
+                    fill: false, // Disable fill for the line chart
+                    borderColor: 'rgba(255, 0, 34, 1)', // Line color
+                    tension: 0.1, // Line smoothness
+                    // yAxisID: 'y1' // Use different y-axis for the line dataset
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false, // Disable vertical grid lines
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,38 @@
+<?php
+$mail->addAddress("$email", "$firstname");
+$mail->Subject = "Registration Successful!";
+$mail->isHTML(true);
+$mail->Body = "<html>
+
+<body style='margin:0;padding:0;'>
+    <div>
+        <div style='width:95%;padding:10px;border-radius:5px;border:1px solid #252525;'>
+            <div style='margin:0 auto;max-width:150px;text-align:center;'>
+                <img src='https://cdni.iconscout.com/illustration/premium/thumb/login-3305943-2757111.png'
+                    alt='register image' style='border-radius:5px;max-width:100%;height:auto;'>
+            </div>
+            <div style='margin-top:20px;text-align:center;font-size:22px;'>
+                You Have Successfully Registered
+            </div>
+            <hr style='width:98%;margin:25px 0;' />
+            <div style='font-size:16px;line-height:1.5;'>
+                Dear <strong>$firstname</strong>,<br /><br />
+                We are delighted to inform you that your registration has been successfully processed. Welcome to the
+                Smart Placement Portal!<br /><br />
+                Your temporary password is: <strong>$corePass</strong><br /><br />
+                Please <a href='<?php echo BASE_URL . 'auth/login.php'?>'>log in</a> and change your password
+immediately for security.<br /><br />
+If you have any questions or encounter any issues, feel free to reach out to our support team at <a
+    href='mailto:placementportal.ac@gmail.com'>placementportal.ac@gmail.com</a>.<br /><br />
+Thank you for choosing the Smart Placement Portal! We look forward to serving you.<br /><br />
+Best regards,<br />
+Smart Placement Portal<br />
+Founder & CEO
+</div>
+</div>
+</div>
+</body>
+
+</html>";
+$mail->AltBody = 'You Have Successfully Registered!';
+$mail->send();
