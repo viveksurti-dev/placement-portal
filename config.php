@@ -46,12 +46,15 @@ class Config
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // register
     function register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password)
     {
+        // 1. Insert into auth table
         $ins = $this->con->prepare("INSERT INTO auth 
         (firstname, middlename, lastname, mail, gender, city, state, contact, authrole, password) 
         VALUES 
         (:fn, :mn, :ln, :em, :gn, :ct, :st, :co, :ro, :pw)");
+
         $ins->bindParam(':fn', $firstname);
         $ins->bindParam(':mn', $middlename);
         $ins->bindParam(':ln', $lastname);
@@ -62,7 +65,154 @@ class Config
         $ins->bindParam(':co', $contact);
         $ins->bindParam(':ro', $role);
         $ins->bindParam(':pw', $password);
-        return $ins->execute();
+
+        // Execute the auth insert
+        if ($ins->execute()) {
+            $authId = $this->con->lastInsertId();
+
+            // 2. If role is student, insert into student table
+            if ($role === 'student') {
+                $studentInsert = $this->con->prepare("INSERT INTO student (Authid, Status) VALUES (:authid, :status)");
+                $studentInsert->bindParam(':authid', $authId);
+                $status = 'active';
+                $studentInsert->bindParam(':status', $status);
+                $studentInsert->execute();
+            }
+
+            return $authId;
+        }
+
+        return false;
+    }
+
+    public function updateStudentProfile($authId, $fields, $files)
+    {
+        $updates = [];
+        $params = [];
+
+        // Allowed fields for update (all lowercase)
+        $allowedFields = [
+            'studentid',
+            'branch',
+            'cgpa',
+            'skills',
+            'pass10year',
+            'pass10board',
+            'pass10percentage',
+            'pass12year',
+            'pass12board',
+            'pass12percentage',
+            'bachelortype',
+            'diplomainstitute',
+            'diplomayear',
+            'diplomapercentage',
+            'bacheloruniversity',
+            'bacheloryear',
+            'bachelorgpa',
+            'bachelorbranch',
+            'status'
+        ];
+
+        // Handle skills (array to comma-separated)
+        if (isset($fields['skills'])) {
+            if (is_array($fields['skills'])) {
+                $fields['skills'] = implode(',', $fields['skills']);
+            }
+            $updates[] = "skills = :skills";
+            $params[':skills'] = $fields['skills'];
+            unset($fields['skills']);
+        }
+
+        // Other allowed fields
+        foreach ($allowedFields as $field) {
+            if (isset($fields[$field]) && $fields[$field] !== '') {
+                $updates[] = "$field = :$field";
+                $params[":$field"] = $fields[$field];
+            }
+        }
+
+        // Handle resume upload (single)
+        if (isset($files['resume']) && $files['resume']['error'] === UPLOAD_ERR_OK) {
+            $resumeName = basename($files['resume']['name']); // Use original name
+            $resumePath = 'uploads/resumes/' . $resumeName;
+            $targetDir = __DIR__ . '/uploads/resumes/';
+            if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+            if (move_uploaded_file($files['resume']['tmp_name'], $targetDir . $resumeName)) {
+                $updates[] = "resume = :resume";
+                $params[':resume'] = $resumePath;
+            }
+        }
+
+        // Handle certificates upload (multiple)
+        if (isset($files['certificate']) && is_array($files['certificate']['name'])) {
+            $certPaths = [];
+            $targetDir = __DIR__ . '/uploads/certificates/';
+            if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+            foreach ($files['certificate']['name'] as $i => $certName) {
+                if ($files['certificate']['error'][$i] === UPLOAD_ERR_OK) {
+                    $certBaseName = basename($certName); // Use original name
+                    $certPath = $targetDir . $certBaseName;
+                    if (move_uploaded_file($files['certificate']['tmp_name'][$i], $certPath)) {
+                        $certPaths[] = 'uploads/certificates/' . $certBaseName;
+                    }
+                }
+            }
+            if (!empty($certPaths)) {
+                $updates[] = "certificate = :certificate";
+                $params[':certificate'] = implode(',', $certPaths);
+            }
+        }
+
+        if (empty($updates)) return false;
+
+        $sql = "UPDATE student SET " . implode(', ', $updates) . " WHERE authid = :authid";
+        $params[':authid'] = $authId;
+
+        $stmt = $this->con->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+
+    // totalStudents
+    function totalStudent()
+    {
+        $stmt = $this->con->prepare('SELECT * FROM student ');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);;
+    }
+
+    // Function to delete resume file and update DB
+    public function deleteResume($authId)
+    {
+        $stmt = $this->con->prepare("SELECT resume FROM student WHERE authid = :id");
+        $stmt->execute([':id' => $authId]);
+        $resume = $stmt->fetchColumn();
+
+        if ($resume && file_exists("../" . $resume)) {
+            unlink("../" . $resume);
+        }
+
+        $update = $this->con->prepare("UPDATE student SET resume = '' WHERE authid = :id");
+        return $update->execute([':id' => $authId]);
+    }
+
+    // Function to delete a specific certificate
+    public function deleteCertificate($authId, $certToDelete)
+    {
+        $stmt = $this->con->prepare("SELECT certificate FROM student WHERE authid = :id");
+        $stmt->execute([':id' => $authId]);
+        $certListStr = $stmt->fetchColumn();
+
+        $certList = explode(',', $certListStr);
+        $certList = array_filter($certList, fn($c) => $c !== $certToDelete);
+        $newCertList = implode(',', $certList);
+
+        if ($certToDelete && file_exists("../" . $certToDelete)) {
+            unlink("../" . $certToDelete);
+        }
+
+        $update = $this->con->prepare("UPDATE student SET certificate = :cert WHERE authid = :id");
+        return $update->execute([':cert' => $newCertList, ':id' => $authId]);
     }
 
     // forgot password via Mail
@@ -77,6 +227,14 @@ class Config
     public function getConnection()
     {
         return $this->con;
+    }
+
+    public function getStudentProfile($authId)
+    {
+        $stmt = $this->con->prepare("SELECT * FROM student WHERE authid = :authid LIMIT 1");
+        $stmt->bindParam(':authid', $authId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 
@@ -104,6 +262,40 @@ try {
     accept_terms BOOLEAN
 )";
     $con->exec($create_auth);
+} catch (PDOException $e) {
+    echo "Error creating table: " . $e->getMessage();
+}
+
+// create student table
+try {
+    $create_student = "CREATE TABLE IF NOT EXISTS student (
+        sid INT AUTO_INCREMENT PRIMARY KEY,
+        authid INT NOT NULL,
+        studentid VARCHAR(100) NOT NULL,
+        branch VARCHAR(100),
+        cgpa DECIMAL(4,2),
+        skills TEXT,
+        resume VARCHAR(255),
+        certificate VARCHAR(255),
+        pass10year YEAR,
+        pass10board VARCHAR(100),
+        pass10percentage DECIMAL(5,2),
+        pass12year YEAR,
+        pass12board VARCHAR(100),
+        pass12percentage DECIMAL(5,2),
+        bachelortype VARCHAR(100),
+        diplomainstitute VARCHAR(255),
+        diplomayear YEAR,
+        diplomapercentage DECIMAL(5,2),
+        bacheloruniversity VARCHAR(255),
+        bacheloryear YEAR,
+        bachelorgpa DECIMAL(4,2),
+        bachelorbranch VARCHAR(100),
+        status VARCHAR(100),
+        FOREIGN KEY (authid) REFERENCES auth(id)
+    )";
+
+    $con->exec($create_student);
 } catch (PDOException $e) {
     echo "Error creating table: " . $e->getMessage();
 }

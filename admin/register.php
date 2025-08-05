@@ -84,12 +84,20 @@ if (isset($_POST['register'])) {
     }
 
     if (!$hasError) {
-        $opr->register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password);
-        require_once '../mails/newAuth.php';
-        $_SESSION['alert'] = [];
-        $_SESSION['alert'][] = "New" . $role . "registered!";
-        echo "<script>window.location.href = '" . BASE_URL . "auth/login.php';</script>";
-        exit;
+        $authId = $opr->register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password);
+
+        if ($authId) {
+            if ($role === 'student') {
+            }
+
+            require_once '../mails/newAuth.php';
+            $_SESSION['alert'] = [];
+            $_SESSION['alert'][] = "New $role registered!";
+            echo "<script>window.location.href = '" . BASE_URL . "auth/login.php';</script>";
+            exit;
+        } else {
+            echo "Registration failed.";
+        }
     }
 }
 ?>
@@ -117,7 +125,7 @@ if (isset($_POST['register'])) {
                                 <input type="text" name="firstname" placeholder="First Name" class="form-control"
                                     value="<?php echo htmlspecialchars($firstname); ?>" />
                                 <?php if ($errors['firstname']): ?>
-                                <span class="text-danger"><small><?php echo $errors['firstname']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['firstname']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-4">
@@ -128,7 +136,7 @@ if (isset($_POST['register'])) {
                                 <input type="text" name="lastname" placeholder="Last Name" class="form-control"
                                     value="<?php echo htmlspecialchars($lastname); ?>" />
                                 <?php if ($errors['lastname']): ?>
-                                <span class="text-danger"><small><?php echo $errors['lastname']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['lastname']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -137,7 +145,7 @@ if (isset($_POST['register'])) {
                                 <input type="email" name="email" placeholder="Email" class="form-control"
                                     value="<?php echo htmlspecialchars($email); ?>" />
                                 <?php if ($errors['email']): ?>
-                                <span class="text-danger"><small><?php echo $errors['email']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['email']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-6">
@@ -152,7 +160,7 @@ if (isset($_POST['register'])) {
                                     </option>
                                 </select>
                                 <?php if ($errors['gender']): ?>
-                                <span class="text-danger"><small><?php echo $errors['gender']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['gender']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -161,14 +169,14 @@ if (isset($_POST['register'])) {
                                 <input type="text" name="city" placeholder="City" class="form-control"
                                     value="<?php echo htmlspecialchars($city); ?>" />
                                 <?php if ($errors['city']): ?>
-                                <span class="text-danger"><small><?php echo $errors['city']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['city']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-6">
                                 <input type="text" name="State" placeholder="State" class="form-control"
                                     value="<?php echo htmlspecialchars($state); ?>" />
                                 <?php if ($errors['state']): ?>
-                                <span class="text-danger"><small><?php echo $errors['state']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['state']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -177,7 +185,7 @@ if (isset($_POST['register'])) {
                                 <input type="number" name="contact" placeholder="Contact Number" class="form-control"
                                     value="<?php echo htmlspecialchars($contact); ?>" />
                                 <?php if ($errors['contact']): ?>
-                                <span class="text-danger"><small><?php echo $errors['contact']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['contact']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-6">
@@ -192,7 +200,7 @@ if (isset($_POST['register'])) {
                                     </option>
                                 </select>
                                 <?php if ($errors['role']): ?>
-                                <span class="text-danger"><small><?php echo $errors['role']; ?></small></span>
+                                    <span class="text-danger"><small><?php echo $errors['role']; ?></small></span>
                                 <?php endif; ?>
                             </div>
                         </div>

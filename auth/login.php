@@ -57,7 +57,8 @@ if (isset($_POST['login'])) {
                                     required>
                             </div>
                             <div class="form-group mt-3">
-                                <input type="submit" value="Login" name="login" class="btn btn-primary w-100">
+                                <input type="submit" id="loginBtn" value="Login" name="login"
+                                    class="btn btn-primary w-100">
                             </div>
                             <div class="form-group mt-2 d-flex justify-content-end">
                                 <a href="<?php echo BASE_URL; ?>auth/forgotpassword.php">Forgot Password?</a>
