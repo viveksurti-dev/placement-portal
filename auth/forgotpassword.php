@@ -1,17 +1,37 @@
 <?php
 require_once '../config.php';
 require_once '../components/navbar.php';
+require_once '../mailStructure.php';
 
 if (isset($_POST['forgotpassword'])) {
     $email = $_POST['email'];
 
     if (empty($email)) {
-        $error = 'please enter an Email';
+        $error = 'Please enter an Email';
     } else {
-        if ($opr->mailSendForPassword($email)) {
-            echo 'mail sented';
+        $user = $opr->mailSendForPassword($email);
+
+        if ($user) {
+            $token = $obj->generateToken();
+
+            setcookie('reset_token', $token, time() + 120, '/');
+            $encryptedEmail = $obj->encryptEmail($email);
+
+            $resetLink = "http://localhost/placementportal/auth/resetPasword.php?t=$token&e=$encryptedEmail";
+
+            try {
+
+                $firstname = $user['firstname'];
+                $email = $user['mail'];
+
+                require_once '../mails/resetpasswordrequest.php';
+
+                $success = "Password reset link has been sent to your email. Please check your inbox.";
+            } catch (Exception $e) {
+                $error = "Failed to send reset email. Please try again later.";
+            }
         } else {
-            $error = 'please enter valid email';
+            $error = 'Email address not found in our system.';
         }
     }
 }

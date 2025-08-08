@@ -3,11 +3,15 @@ require_once '../config.php';
 require_once '../components/navbar.php';
 
 if (isset($_POST['login'])) {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     if (empty($email) || empty($password)) {
-        $error = 'Email and Password Are Required';
+        $error = 'Email and Password are required.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Please enter a valid email address.';
+    } elseif (strlen($password) < 6) {
+        $error = 'Password must be at least 6 characters.';
     } else {
         $auth = $opr->login($email);
         if ($auth && password_verify($password, $auth['password'])) {
@@ -50,11 +54,11 @@ if (isset($_POST['login'])) {
                                 <h3 class="text-center">Login</h3>
                             </div>
                             <div class="form-group">
-                                <input type="mail" class="form-control" placeholder="Enter Email" name="email" required>
+                                <input type="mail" class="form-control" placeholder="Enter Email" name="email">
                             </div>
                             <div class="form-group mt-2">
-                                <input type="password" class="form-control" placeholder="Enter Password" name="password"
-                                    required>
+                                <input type="password" class="form-control" placeholder="Enter Password"
+                                    name="password">
                             </div>
                             <div class="form-group mt-3">
                                 <input type="submit" id="loginBtn" value="Login" name="login"

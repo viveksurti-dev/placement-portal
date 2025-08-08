@@ -66,11 +66,9 @@ class Config
         $ins->bindParam(':ro', $role);
         $ins->bindParam(':pw', $password);
 
-        // Execute the auth insert
         if ($ins->execute()) {
             $authId = $this->con->lastInsertId();
 
-            // 2. If role is student, insert into student table
             if ($role === 'student') {
                 $studentInsert = $this->con->prepare("INSERT INTO student (Authid, Status) VALUES (:authid, :status)");
                 $studentInsert->bindParam(':authid', $authId);
@@ -83,6 +81,40 @@ class Config
         }
 
         return false;
+    }
+
+    // Generate a secure random token
+    public function generateToken($length = 32)
+    {
+        return bin2hex(random_bytes($length));
+    }
+
+    // Encrypt email for URL
+    public function encryptEmail($email)
+    {
+        $key = 'your-secret-key-123';
+        $iv = substr(hash('sha256', $key), 0, 16);
+        $encrypted = openssl_encrypt($email, 'AES-128-CBC', $key, 0, $iv);
+        return urlencode(base64_encode($encrypted));
+    }
+
+    // Decrypt email from URL
+    public function decryptEmail($encryptedEmail)
+    {
+        $key = 'your-secret-key-123'; // Use the same key as encryption
+        $iv = substr(hash('sha256', $key), 0, 16);
+        $decoded = base64_decode(urldecode($encryptedEmail));
+        return openssl_decrypt($decoded, 'AES-128-CBC', $key, 0, $iv);
+    }
+
+    // Update password for auth by email
+    public function updatePassword($email, $newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $stmt = $this->con->prepare("UPDATE auth SET password = :pw WHERE mail = :em");
+        $stmt->bindParam(':pw', $hashedPassword);
+        $stmt->bindParam(':em', $email);
+        return $stmt->execute();
     }
 
     public function updateStudentProfile($authId, $fields, $files)
@@ -113,7 +145,7 @@ class Config
             'status'
         ];
 
-        // Handle skills (array to comma-separated)
+        // Handle skills
         if (isset($fields['skills'])) {
             if (is_array($fields['skills'])) {
                 $fields['skills'] = implode(',', $fields['skills']);
@@ -131,7 +163,7 @@ class Config
             }
         }
 
-        // Handle resume upload (single)
+        // Handle resume upload 
         if (isset($files['resume']) && $files['resume']['error'] === UPLOAD_ERR_OK) {
             $resumeName = basename($files['resume']['name']); // Use original name
             $resumePath = 'uploads/resumes/' . $resumeName;
@@ -143,14 +175,14 @@ class Config
             }
         }
 
-        // Handle certificates upload (multiple)
+        // Handle certificates upload
         if (isset($files['certificate']) && is_array($files['certificate']['name'])) {
             $certPaths = [];
             $targetDir = __DIR__ . '/uploads/certificates/';
             if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
             foreach ($files['certificate']['name'] as $i => $certName) {
                 if ($files['certificate']['error'][$i] === UPLOAD_ERR_OK) {
-                    $certBaseName = basename($certName); // Use original name
+                    $certBaseName = basename($certName);
                     $certPath = $targetDir . $certBaseName;
                     if (move_uploaded_file($files['certificate']['tmp_name'][$i], $certPath)) {
                         $certPaths[] = 'uploads/certificates/' . $certBaseName;
@@ -181,7 +213,7 @@ class Config
         return $stmt->fetchAll(PDO::FETCH_ASSOC);;
     }
 
-    // Function to delete resume file and update DB
+    // delete resume
     public function deleteResume($authId)
     {
         $stmt = $this->con->prepare("SELECT resume FROM student WHERE authid = :id");
@@ -196,7 +228,7 @@ class Config
         return $update->execute([':id' => $authId]);
     }
 
-    // Function to delete a specific certificate
+    // delete a specific certificate
     public function deleteCertificate($authId, $certToDelete)
     {
         $stmt = $this->con->prepare("SELECT certificate FROM student WHERE authid = :id");
@@ -218,7 +250,7 @@ class Config
     // forgot password via Mail
     function mailSendForPassword($email)
     {
-        $stmt = $this->con->prepare("SELECT mail FROM auth WHERE mail = :em");
+        $stmt = $this->con->prepare("SELECT * FROM auth WHERE mail = :em");
         $stmt->bindParam(':em', $email);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);

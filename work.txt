@@ -1,6 +1,178 @@
-1. auth/forgotpasword.php
-    - mail sending remaining
+Smart Placement Portal - Work Progress
 
-2. account/dashboard.php
-    (a) Admin
-    - anlysis and Profile loading remaining
+=========================
+✅ COMPLETED FEATURES
+=========================
+
+STUDENT
+- Login/logout with server-side validation
+- Edit and update profile (all academic fields, skills, etc.)
+- Upload, preview, and delete resume (PDF)
+- Upload, preview, and delete multiple certificates
+- Dynamic form: shows Diploma or Bachelor fields based on degree type
+- Profile completeness progress bar
+- Pre-filled form fields for editing
+- Registration/sign-up with email verification
+
+ADMIN
+- Login/logout with server-side validation
+- Dashboard with info cards (e.g., total students)
+- View student profiles and progress
+- Responsive Bootstrap UI
+
+COMPANY
+- Basic structure ready (login, dashboard placeholder)
+
+COORDINATOR
+- Basic structure ready (login, dashboard placeholder)
+
+AUTOMATED TESTING
+- Selenium (PHP WebDriver) login test implemented
+- Composer dependency management for PHP WebDriver
+
+GENERAL
+- Bootstrap-based responsive forms and dashboard
+- Error and success messages for user actions
+- Forgot password (reset via email)
+
+=========================
+❗ REMAINING 
+=========================
+
+STUDENT
+- View and apply for job postings
+- View placement status (selected, not selected, etc.)
+- Receive notifications/alerts (new jobs, selection, deadlines)
+- Profile photo upload
+- Personalized dashboard: upcoming interviews, deadlines, job match suggestions
+- Resume builder (smart templates, auto-fill)
+- Application tracker (track applied companies, status updates)
+
+ADMIN
+- Manage (CRUD) students, companies, coordinators
+- Post jobs and view applicants
+- Placement analytics and reports (placement stats, top recruiters, etc.)
+- Export data (CSV/PDF)
+- Send notifications/alerts to students/companies
+- Security hardening (CSRF, XSS, SQL injection protection)
+- View and manage activity logs (optional)
+- Master data management (departments, branches, academic years, company database)
+- Drive management (end-to-end workflow, feedback collection)
+- System configuration (permissions, thresholds, branding/themes)
+- Admin analytics dashboard (real-time stats, drill-downs)
+
+COMPANY
+- Registration and login
+- Manage company profile
+- Post job openings (create/edit, set eligibility, upload JD/brochures)
+- View applicants for posted jobs
+- Update job status and communicate with students
+- Candidate shortlisting (auto-filter, view student profiles/resumes)
+- Company insights (past engagement, interviewer feedback)
+
+COORDINATOR
+- Registration and login
+- Manage and verify student profiles
+- Coordinate between students, companies, and admin
+- Approve/reject job postings and student applications
+- Send notifications/alerts
+- Schedule management (calendar view, interview panel, email/notification system)
+- Batch and group management (assign batches, tag students)
+- Reports and analytics (placement stats, exportable reports)
+
+TESTING & ASSESSMENT
+- Test platform integration (aptitude, technical, coding tests, HackerRank, Codility, etc.)
+- Custom test creation (MCQs, coding, psychometric)
+- Auto-evaluation and result publishing
+- Interview simulation (mock interviews, feedback)
+
+COMMUNICATION
+- Notifications (email, SMS, in-app, event reminders, result alerts)
+- Chatbot assistant (FAQ, job queries, real-time support)
+
+SECURITY & COMPLIANCE
+- Data protection (GDPR/FERPA, encryption)
+- Audit logs (user activity, error/performance logs)
+- Backup & recovery (auto backup, disaster recovery)
+
+INTEGRATION
+- APIs for external systems (ERP, job portals, LMS)
+- Third-party services (payment gateway for certification drives)
+
+GENERAL
+- Client-side (JavaScript) validation for forms
+- Further mobile responsiveness and accessibility
+- Documentation for setup and usage
+
+
+=========================
+Expected Strucutre
+=========================
+placementportal/
+│
+├── account/
+│   ├── dashboard.php
+│   ├── editProfile.php
+│   ├── student.php
+│   ├── company_dashboard.php
+│   ├── coordinator_dashboard.php
+│   ├── admin_dashboard.php
+│   ├── applications.php
+│   ├── jobs.php
+│   ├── post_job.php
+│   ├── applicants.php
+│   ├── manage_students.php
+│   ├── manage_companies.php
+│   ├── manage_coordinators.php
+│   ├── notifications.php
+│
+├── auth/
+│   ├── login.php
+│   ├── logout.php
+│   ├── register.php
+│   ├── company_register.php
+│   ├── coordinator_register.php
+│   ├── forgot_password.php
+│   ├── reset_password.php
+│
+├── company/
+│   ├── profile.php
+│   ├── jobs.php
+│   ├── applicants.php
+│
+├── coordinator/
+│   ├── batches.php
+│   ├── schedule.php
+│   ├── approvals.php
+│
+├── admin/
+│   ├── analytics.php
+│   ├── export.php
+│   ├── settings.php
+│   ├── master_data.php
+│
+├── test/
+│   ├── test.php
+│
+├── components/
+│   ├── navbar.php
+│   ├── footer.php
+│
+├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── uploads/
+│
+├── config.php
+├── work.txt
+├── composer.json
+└── README.md
+
+=========================
+NOTES
+=========================
+- All form field names and DB columns are now lowercase for consistency.
+- File upload and delete logic is working for both resume and certificates.
+- Automated tests are set up but can be expanded for more scenarios.
+- Some UI/UX polish and error handling
