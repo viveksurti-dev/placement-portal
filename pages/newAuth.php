@@ -1,12 +1,7 @@
 <?php
-require_once '../config.php';
-require_once '../components/navbar.php';
-require_once '../mailStructure.php';
-
-if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
-    echo "<script>window.location.href = '" . BASE_URL . "auth/login.php';</script>";
-    exit;
-}
+// require_once '../config.php';
+// require_once '../components/navbar.php';
+// require_once '../mailStructure.php';
 
 $errors = [
     'firstname' => '',
@@ -84,19 +79,22 @@ if (isset($_POST['register'])) {
     }
 
     if (!$hasError) {
-        $authId = $opr->register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password);
+        try {
+            $authId = $opr->register($firstname, $middlename, $lastname, $email, $gender, $city, $state, $contact, $role, $password);
 
-        if ($authId) {
-            if ($role === 'student') {
+            if ($authId) {
+                require_once ROOT_PATH . 'mails/newAuth.php';
+                $_SESSION['alert'] = [];
+                $_SESSION['alert'][] = "New $role registered!";
+
+                echo "<script>window.location.href = '';</script>";
+                exit;
+            } else {
+                echo "<div class='alert alert-danger'>Registration failed. Please try again.</div>";
             }
-
-            require_once '../mails/newAuth.php';
-            $_SESSION['alert'] = [];
-            $_SESSION['alert'][] = "New $role registered!";
-            echo "<script>window.location.href = '" . BASE_URL . "auth/login.php';</script>";
-            exit;
-        } else {
-            echo "Registration failed.";
+        } catch (Exception $e) {
+            error_log("Registration error: " . $e->getMessage());
+            echo "<div class='alert alert-danger'>Registration failed: " . htmlspecialchars($e->getMessage()) . "</div>";
         }
     }
 }
@@ -112,14 +110,11 @@ if (isset($_POST['register'])) {
 </head>
 
 <body>
-    <section class="container-fluid d-flex justify-content-center mt-5">
+    <section class="container-fluid d-flex justify-content-center ">
         <form method="POST">
             <div class="container-register col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="form-group">
-                            <h3 class="text-center">Registration</h3>
-                        </div>
                         <div class="form-group d-flex justify-content-between mt-3">
                             <div class="col-md-4 pe-2">
                                 <input type="text" name="firstname" placeholder="First Name" class="form-control"

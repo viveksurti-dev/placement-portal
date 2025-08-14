@@ -20,7 +20,7 @@ if (isset($_POST['login'])) {
 
             $_SESSION['alert'] = [];
             $_SESSION['alert'][] = "<strong>Hey! $email </strong>Login Successfully";
-            echo "<script>window.location.href='" . BASE_URL . "account/dashboard.php';</script>";
+            echo "<script>window.location.href='" . BASE_URL . "account/';</script>";
             exit();
         } else {
             $error = "Invalid Username or Password";

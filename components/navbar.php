@@ -1,6 +1,6 @@
 <?php
 session_start();
-define('BASE_URL', '/placementportal/');
+// define('BASE_URL', '/placementportal/');
 $opr = new Config($database);
 
 
@@ -48,7 +48,7 @@ if (isset($_POST['logout'])) {
                         <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL . 'account/dashboard.php' ?>">Dashboard</a>
+                        <a class="nav-link" href="<?php echo BASE_URL . 'account/' ?>">Dashboard</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

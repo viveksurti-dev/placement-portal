@@ -19,6 +19,7 @@ ADMIN
 - Dashboard with info cards (e.g., total students)
 - View student profiles and progress
 - Responsive Bootstrap UI
+- Manage (CRUD) students
 
 COMPANY
 - Basic structure ready (login, dashboard placeholder)
@@ -49,7 +50,7 @@ STUDENT
 - Application tracker (track applied companies, status updates)
 
 ADMIN
-- Manage (CRUD) students, companies, coordinators
+- Manage (CRUD) companies, coordinators
 - Post jobs and view applicants
 - Placement analytics and reports (placement stats, top recruiters, etc.)
 - Export data (CSV/PDF)

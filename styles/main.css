@@ -8,6 +8,7 @@
 
 body {
     background-color: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* rest of the styles remain unchanged */
@@ -27,7 +28,7 @@ body {
 
 .container-dashboard .dashboard-profile {
     min-width: 300px;
-    width: auto;
+    /* width: auto; */
     max-width: 350px;
     background-color: white;
     display: flex;
@@ -191,4 +192,8 @@ body {
     }
 }
 
-/* progress bar */
+/* admin */
+.container-sidebar {
+    background-color: white;
+    padding: 10px;
+}

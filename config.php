@@ -8,6 +8,13 @@
 <?php
 $database = 'placementportal';
 
+// set path
+define('ROOT_PATH', $_SERVER['DOCUMENT_ROOT'] . '/placementportal/');
+define('BASE_URL', '/placementportal/');
+
+
+
+
 $conn = mysqli_connect("localhost", "root", "");
 
 if (!$conn) {
@@ -69,16 +76,24 @@ class Config
         if ($ins->execute()) {
             $authId = $this->con->lastInsertId();
 
-            if ($role === 'student') {
-                $studentInsert = $this->con->prepare("INSERT INTO student (Authid, Status) VALUES (:authid, :status)");
-                $studentInsert->bindParam(':authid', $authId);
+            $tableMap = [
+                'student'     => 'student',
+                'company'     => 'company',
+                'co-ordinator' => 'coordinator'
+            ];
+
+            if (isset($tableMap[$role])) {
+                $table = $tableMap[$role];
+                $stmt = $this->con->prepare("INSERT INTO {$table} (authid, status) VALUES (:authid, :status)");
+                $stmt->bindParam(':authid', $authId);
                 $status = 'active';
-                $studentInsert->bindParam(':status', $status);
-                $studentInsert->execute();
+                $stmt->bindParam(':status', $status);
+                $stmt->execute();
             }
 
             return $authId;
         }
+
 
         return false;
     }
@@ -101,7 +116,7 @@ class Config
     // Decrypt email from URL
     public function decryptEmail($encryptedEmail)
     {
-        $key = 'your-secret-key-123'; // Use the same key as encryption
+        $key = 'your-secret-key-123';
         $iv = substr(hash('sha256', $key), 0, 16);
         $decoded = base64_decode(urldecode($encryptedEmail));
         return openssl_decrypt($decoded, 'AES-128-CBC', $key, 0, $iv);
@@ -256,6 +271,27 @@ class Config
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // admin
+    // get all students
+    function getStudets()
+    {
+        $stmt = $this->con->prepare('SELECT s.*,a.* FROM student s JOIN auth a ON a.id = s.authid');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    function getCompanies()
+    {
+        $stmt = $this->con->prepare('SELECT c.*,a.* FROM company c JOIN auth a ON a.id = c.authid');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    function getCoordinators()
+    {
+        $stmt = $this->con->prepare('SELECT co.*,a.* FROM coordinator co JOIN auth a ON a.id = co.authid');
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getConnection()
     {
         return $this->con;
@@ -330,4 +366,44 @@ try {
     $con->exec($create_student);
 } catch (PDOException $e) {
     echo "Error creating table: " . $e->getMessage();
+}
+
+// company table
+try {
+    $create_company = "CREATE TABLE IF NOT EXISTS company (
+        cid INT AUTO_INCREMENT PRIMARY KEY,
+        authid INT NOT NULL,
+        cimage VARCHAR(255),
+        cname VARCHAR(255),
+        ctype VARCHAR(100),
+        cweb VARCHAR(255),
+        cabout TEXT,
+        csize INT,
+        cspecialization VARCHAR(255),
+        caddress TEXT,
+        clinkedin TEXT,
+        FOREIGN KEY (authid) REFERENCES auth(id)
+    )";
+
+    $con->exec($create_company);
+} catch (PDOException $e) {
+    echo "Error creating table: " . $e->getMessage();
+}
+
+// coordinator table
+try {
+    $create_coordinator = "CREATE TABLE IF NOT EXISTS coordinator (
+        coordinatorid INT AUTO_INCREMENT PRIMARY KEY,
+        authid INT NOT NULL,
+        employeecode VARCHAR(100),
+        designation VARCHAR(100),
+        department VARCHAR(100),
+        joiningdate DATE,
+        remarks TEXT,
+        FOREIGN KEY (authid) REFERENCES auth(id)
+    )";
+
+    $con->exec($create_coordinator);
+} catch (PDOException $e) {
+    echo "Error creating coordinator table: " . $e->getMessage();
 }

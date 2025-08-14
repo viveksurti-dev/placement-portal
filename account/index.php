@@ -59,7 +59,7 @@ if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
 
                 <!-- options -->
                 <div class="option">
-                    <a href="<?php echo BASE_URL ?>admin/manage.php/" class="btn btn-outline-danger">Manage</a>
+                    <a href="<?php echo BASE_URL ?>admin/" class="btn btn-outline-danger">Manage</a>
                     <?php
                     $encId = base64_encode($auth['mail']);
                     ?>
