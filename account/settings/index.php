@@ -1,10 +1,10 @@
 <?php
-require_once '../config.php';
+require_once '../../config.php';
 require_once ROOT_PATH . 'components/navbar.php';
 require_once ROOT_PATH . 'mailStructure.php';
 
 
-if ($auth['authrole'] !== 'admin' && !$isLoggedIn) {
+if (!$isLoggedIn) {
     echo "<script>window.location.href='" . BASE_URL . "auth/login.php';</script>";
     exit();
 }
@@ -26,7 +26,7 @@ $page = $_GET['p'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        Dashboard
+        settings
     </title>
     <link rel="stylesheet" href="<?php echo BASE_URL ?>styles/main.css">
     <style>
@@ -44,12 +44,11 @@ $page = $_GET['p'] ?? '';
         border: 1px solid gray;
         color: #252525ff;
         font-weight: 600;
-        /* border: 1px solid black; */
     }
 
 
     .sidebar-heading {
-        padding: 20px 0 10px 10px;
+        padding: 20px 10px 20px 10px;
         font-weight: bold;
         font-size: 1.2rem;
         background-color: #ddd;
@@ -109,30 +108,31 @@ $page = $_GET['p'] ?? '';
     <div class="d-flex container-main">
         <div class="container-sidebar d-flex flex-column">
             <div class="sidebar-heading">
-                <h5><span class="text-capitalize"><?php echo $auth['authrole'] ?></span> Panel</h5>
+                <small><span class="text-uppercase">settings</small>
             </div>
             <div class="sidebar-menus mt-5">
 
-                <a href="<?php echo BASE_URL ?>admin/" class="<?php echo $page === '' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-person-lines-fill"></i> Dashboard
+                <a href="<?php echo BASE_URL ?>account/settings/"
+                    class="<?php echo $page === '' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-person-lines-fill"></i> Basic Info
                 </a>
-                <a href="?p=newauth/" class="<?php echo $page === 'newauth/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-person-lines-fill"></i> New Auth
+                <?php if ($auth['authrole'] === 'student') { ?>
+                <a href="?p=academicdetails/" class="<?php echo $page === 'academicdetails/' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-book-half"></i> Academic
                 </a>
-                <a href="?p=managestudents/" class="<?php echo $page === 'managestudents/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-people"></i> Students
+                <?php } ?>
+                <?php if ($auth['authrole'] === 'co-ordinator') { ?>
+                <a href="?p=co-ordinatordetails/"
+                    class="<?php echo $page === 'co-ordinatordetails/' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-bar-chart-steps"></i> Co-Or Detail
                 </a>
-                <a href="?p=managecordinators/"
-                    class="<?php echo $page === 'managecordinators/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-people"></i> Co-Ordinators
+                <?php } ?>
+                <a href="?p=sociallinks/" class="<?php echo $page === 'sociallinks/' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-link-45deg"></i> Social Links
                 </a>
-                <a href="?p=managecompany/" class="<?php echo $page === 'managecompany/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-building-fill-check"></i> Companies
-                </a>
-
             </div>
             <div class="back">
-                <a href="<?php echo BASE_URL; ?>account/" class="btn btn-outline-danger w-100">Back</a>
+                <a href="<?php echo BASE_URL ?>?logout" class="btn btn-outline-danger w-100">Logout</a>
             </div>
         </div>
         <div class="container-admin-content flex-grow-1 p-4">
@@ -141,20 +141,18 @@ $page = $_GET['p'] ?? '';
 
             switch ($page) {
                 case '':
-                    echo 'dashboard';
+                    require  './editBasic.php';
                     break;
-                case 'newauth/':
-                    require_once './newAuth.php';
+                case 'academicdetails/':
+                    require_once './editAcademic.php';
                     break;
-                case 'managestudents/':
-                    require_once './manageStudent.php';
+                case 'sociallinks/':
+                    require_once './editSocial.php';
                     break;
-                case 'managecompany/':
-                    require_once './manageCompany.php';
+                case 'co-ordinatordetails/':
+                    require_once './editCo_ordinator.php';
                     break;
-                case 'managecordinators/':
-                    require_once './manageCoordinator.php';
-                    break;
+
                 default:
                     echo 'Page Not Found';
             }

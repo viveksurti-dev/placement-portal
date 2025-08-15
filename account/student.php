@@ -1,13 +1,32 @@
 <?php
 $studentData = $opr->getStudentProfile($auth['id']);
 
+$excludeAlways = ['sid', 'authid', 'accept_terms', 'created_at', 'authrole'];
+$diplomaFields = ['diplomainstitute', 'diplomayear', 'diplomapercentage'];
+$twelfthFields = ['pass12year', 'pass12board', 'pass12percentage'];
+$bachelorFields = ['bacheloruniversity', 'bacheloryear', 'bachelorgpa', 'bachelordegree', 'bachelortype'];
+
 $totalFields = count($studentData);
 $filledFields = 0;
 
 foreach ($studentData as $key => $value) {
-    if (in_array(strtolower($key), ['sid', 'authid', 'status'])) {
+    $keyLower = strtolower($key);
+
+    if (in_array($keyLower, $excludeAlways)) {
         $totalFields--;
         continue;
+    }
+
+    if (strtolower($studentData['bachelortype']) === 'diploma') {
+        if (in_array($keyLower, array_merge($twelfthFields, $bachelorFields))) {
+            $totalFields--;
+            continue;
+        }
+    } else {
+        if (in_array($keyLower, $diplomaFields)) {
+            $totalFields--;
+            continue;
+        }
     }
 
     if (!is_null($value) && trim($value) !== '') {
@@ -16,6 +35,7 @@ foreach ($studentData as $key => $value) {
 }
 
 $progress = $totalFields > 0 ? round(($filledFields / $totalFields) * 100) : 0;
+
 ?>
 
 
@@ -35,13 +55,13 @@ $progress = $totalFields > 0 ? round(($filledFields / $totalFields) * 100) : 0;
                         </div>
 
                         <?php if ($progress < 100): ?>
-                            <div class="alert alert-warning mt-3">
-                                <strong>Note:</strong> Complete missing fields to reach 100%.
-                            </div>
+                        <div class="alert alert-warning mt-3">
+                            <strong>Note:</strong> Complete missing fields to reach 100%.
+                        </div>
                         <?php else: ?>
-                            <div class="alert alert-success mt-3">
-                                Your profile is fully complete!
-                            </div>
+                        <div class="alert alert-success mt-3">
+                            Your profile is fully complete!
+                        </div>
                         <?php endif; ?>
 
                         <h6 class="mt-4">Filled <?= $filledFields ?> out of <?= $totalFields ?> fields</h6>

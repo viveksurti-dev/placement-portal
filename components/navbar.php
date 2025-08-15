@@ -30,6 +30,12 @@ if (isset($_POST['logout'])) {
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+    nav {
+        height: 60px !important;
+
+    }
+    </style>
 </head>
 
 <body>
@@ -66,46 +72,50 @@ if (isset($_POST['logout'])) {
                     </li>
                 </ul>
 
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                </form>
-                <form method="POST">
-                    <?php if ($isLoggedIn): ?>
+                <div class="d-flex justify-center align-items-center">
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    </form>
+                    <form method="POST">
+                        <?php if ($isLoggedIn): ?>
                         <input type="submit" value="Logout" name="logout" class="btn btn-outline-danger" />
-                    <?php else: ?>
+                        <?php else: ?>
                         <a href="<?php echo BASE_URL . 'auth/login.php'; ?>">Login</a>
-                    <?php endif; ?>
-                </form>
+                        <?php endif; ?>
+                    </form>
+                </div>
 
             </div>
         </div>
     </nav>
 
     <div class="alert-wrapper">
-        <?php if (!empty($_SESSION['alert'])) {
-            foreach ($_SESSION['alert'] as $alertMessage) { ?>
-                <div class="alert-container slide-in">
-                    <div class="alert-head">
-                        <small> Alert!</small>
-                    </div>
-                    <hr />
-                    <div class="alert-body">
-                        <?php echo $alertMessage; ?>
-                    </div>
-                </div>
-        <?php }
-            unset($_SESSION['alert']);
-        } ?>
+        <?php if (!empty($_SESSION['alert'])): ?>
+        <?php foreach ($_SESSION['alert'] as $alert): ?>
+        <div class="alert-container slide-in alert-<?php echo $alert['type'] ?>">
+            <div class="alert-head">
+                <small><strong><?= ucfirst($alert['type']) ?>!</strong></small>
+            </div>
+            <hr />
+            <div class="alert-body">
+                <?= $alert['message'] ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <?php unset($_SESSION['alert']); ?>
+        <?php endif; ?>
     </div>
-    <script>
-        const alerts = document.querySelectorAll('.alert-container');
 
-        alerts.forEach((alert, index) => {
-            setTimeout(() => {
-                alert.classList.remove('slide-in');
-                alert.classList.add('slide-out');
-                setTimeout(() => alert.remove(), 600);
-            }, 5000 + index * 200);
-        });
+    <script>
+    const alerts = document.querySelectorAll('.alert-container');
+
+    alerts.forEach((alert, index) => {
+        setTimeout(() => {
+            alert.classList.remove('slide-in');
+            alert.classList.add('slide-out');
+            setTimeout(() => alert.remove(), 600);
+        }, 5000 + index * 200);
+    });
     </script>
+
 </body>

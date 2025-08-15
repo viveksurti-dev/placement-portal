@@ -23,13 +23,13 @@ $coordinators = $opr->getCoordinators();
             <thead>
                 <tr>
                     <th>Image</th>
-                    <th>Company Name</th>
-                    <th>HR Name</th>
+                    <th>Emp Code</th>
+                    <th>Name</th>
                     <th>Email</th>
                     <th>Contact</th>
-                    <th>Industy</th>
-                    <th>Website</th>
-                    <th>Status</th>
+                    <th>Gender</th>
+                    <th>Designation</th>
+                    <th>Department</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -45,20 +45,18 @@ $coordinators = $opr->getCoordinators();
                                     width="50" class="rounded-1 object-fit-cover">
                             <?php } ?>
                         </td>
-                        <td><?php echo $cordinator['cname']; ?></td>
+                        <td><?php echo $cordinator['employeecode']; ?></td>
                         <td><?php echo $cordinator['firstname'] . ' ' . $cordinator['middlename'] . ' ' . $cordinator['lastname']; ?>
                         </td>
                         <td><?php echo $cordinator['mail']; ?></td>
                         <td><?php echo $cordinator['contact']; ?></td>
-                        <td><?php echo $cordinator['ctype']; ?></td>
-                        <td><?php echo $cordinator['ctype']; ?></td>
-                        <td><?php echo $cordinator['status']; ?></td>
+                        <td><?php echo $cordinator['gender']; ?></td>
+                        <td><?php echo $cordinator['designation']; ?></td>
+                        <td><?php echo $cordinator['department']; ?></td>
                         <td>
                             <!-- Example action buttons -->
-                            <a href="view.php?id=<?php echo $cordinator['cid']; ?>" class="btn btn-primary p-3"><i
+                            <a href="view.php?id=<?php echo $cordinator['authid']; ?>" class="btn btn-primary p-3"><i
                                     class="bi bi-view-list"></i></a>
-                            <a href="edit.php?id=<?php echo $cordinator['cid']; ?>" class="btn  btn-warning p-3"><i
-                                    class="bi bi-pencil-square"></i></a>
 
                         </td>
                     </tr>

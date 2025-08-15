@@ -84,10 +84,8 @@ class Config
 
             if (isset($tableMap[$role])) {
                 $table = $tableMap[$role];
-                $stmt = $this->con->prepare("INSERT INTO {$table} (authid, status) VALUES (:authid, :status)");
+                $stmt = $this->con->prepare("INSERT INTO {$table} (authid) VALUES (:authid)");
                 $stmt->bindParam(':authid', $authId);
-                $status = 'active';
-                $stmt->bindParam(':status', $status);
                 $stmt->execute();
             }
 
@@ -97,6 +95,45 @@ class Config
 
         return false;
     }
+
+    // update basic info
+    public function updateProfile($email, $firstname, $middlename, $lastname, $contact, $city, $state, $gender, $bio)
+    {
+        $stmt = $this->con->prepare("
+        UPDATE auth SET 
+            firstname = :firstname,
+            middlename = :middlename,
+            lastname = :lastname,
+            contact = :contact,
+            city = :city,
+            state = :state,
+            gender = :gender,
+            bio = :bio
+        WHERE mail = :email
+    ");
+
+        $stmt->bindParam(':firstname', $firstname);
+        $stmt->bindParam(':middlename', $middlename);
+        $stmt->bindParam(':lastname', $lastname);
+        $stmt->bindParam(':contact', $contact);
+        $stmt->bindParam(':city', $city);
+        $stmt->bindParam(':state', $state);
+        $stmt->bindParam(':gender', $gender);
+        $stmt->bindParam(':bio', $bio);
+        $stmt->bindParam(':email', $email);
+
+        return $stmt->execute();
+    }
+
+    // update User Image
+    public function updateUserImage($mail, $filename)
+    {
+        $stmt = $this->con->prepare("UPDATE auth SET userimage = :img WHERE mail = :em");
+        $stmt->bindParam(':img', $filename);
+        $stmt->bindParam(':em', $mail);
+        return $stmt->execute();
+    }
+
 
     // Generate a secure random token
     public function generateToken($length = 32)
@@ -131,18 +168,21 @@ class Config
         $stmt->bindParam(':em', $email);
         return $stmt->execute();
     }
-
     public function updateStudentProfile($authId, $fields, $files)
     {
         $updates = [];
         $params = [];
 
-        // Allowed fields for update (all lowercase)
+        // Allowed fields
         $allowedFields = [
+            'sid',
+            'authid',
             'studentid',
             'branch',
             'cgpa',
             'skills',
+            'resume',
+            'certificate',
             'pass10year',
             'pass10board',
             'pass10percentage',
@@ -156,21 +196,16 @@ class Config
             'bacheloruniversity',
             'bacheloryear',
             'bachelorgpa',
-            'bachelorbranch',
+            'bachelordegree',
             'status'
         ];
 
-        // Handle skills
-        if (isset($fields['skills'])) {
-            if (is_array($fields['skills'])) {
-                $fields['skills'] = implode(',', $fields['skills']);
-            }
-            $updates[] = "skills = :skills";
-            $params[':skills'] = $fields['skills'];
-            unset($fields['skills']);
+        // Handle skills 
+        if (!empty($fields['skills'])) {
+            $fields['skills'] = implode(',', array_map('trim', explode(',', $fields['skills'])));
         }
 
-        // Other allowed fields
+        // Handle allowed fields
         foreach ($allowedFields as $field) {
             if (isset($fields[$field]) && $fields[$field] !== '') {
                 $updates[] = "$field = :$field";
@@ -178,35 +213,45 @@ class Config
             }
         }
 
-        // Handle resume upload 
+        // Handle resume upload (single file)
         if (isset($files['resume']) && $files['resume']['error'] === UPLOAD_ERR_OK) {
-            $resumeName = basename($files['resume']['name']); // Use original name
+            $resumeName = basename($files['resume']['name']);
             $resumePath = 'uploads/resumes/' . $resumeName;
             $targetDir = __DIR__ . '/uploads/resumes/';
             if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+
+            // Delete old resume
+            $oldResume = $this->con->prepare("SELECT resume FROM student WHERE authid = :id");
+            $oldResume->execute([':id' => $authId]);
+            $oldResumePath = $oldResume->fetchColumn();
+            if ($oldResumePath && file_exists(__DIR__ . '/' . $oldResumePath)) {
+                unlink(__DIR__ . '/' . $oldResumePath);
+            }
+
             if (move_uploaded_file($files['resume']['tmp_name'], $targetDir . $resumeName)) {
                 $updates[] = "resume = :resume";
                 $params[':resume'] = $resumePath;
             }
         }
 
-        // Handle certificates upload
-        if (isset($files['certificate']) && is_array($files['certificate']['name'])) {
-            $certPaths = [];
+        // Handle certificate upload
+        if (isset($files['certificate']) && $files['certificate']['error'] === UPLOAD_ERR_OK) {
+            $certName = basename($files['certificate']['name']);
+            $certPath = 'uploads/certificates/' . $certName;
             $targetDir = __DIR__ . '/uploads/certificates/';
             if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-            foreach ($files['certificate']['name'] as $i => $certName) {
-                if ($files['certificate']['error'][$i] === UPLOAD_ERR_OK) {
-                    $certBaseName = basename($certName);
-                    $certPath = $targetDir . $certBaseName;
-                    if (move_uploaded_file($files['certificate']['tmp_name'][$i], $certPath)) {
-                        $certPaths[] = 'uploads/certificates/' . $certBaseName;
-                    }
-                }
+
+            // Delete old certificate
+            $oldCert = $this->con->prepare("SELECT certificate FROM student WHERE authid = :id");
+            $oldCert->execute([':id' => $authId]);
+            $oldCertPath = $oldCert->fetchColumn();
+            if ($oldCertPath && file_exists(__DIR__ . '/' . $oldCertPath)) {
+                unlink(__DIR__ . '/' . $oldCertPath);
             }
-            if (!empty($certPaths)) {
+
+            if (move_uploaded_file($files['certificate']['tmp_name'], $targetDir . $certName)) {
                 $updates[] = "certificate = :certificate";
-                $params[':certificate'] = implode(',', $certPaths);
+                $params[':certificate'] = $certPath;
             }
         }
 
@@ -270,7 +315,38 @@ class Config
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    // co-ordinator
+    // Get coordinator by auth ID
+    public function getCoordinator($authId)
+    {
+        $stmt = $this->con->prepare("SELECT * FROM coordinator WHERE authid = :authid");
+        $stmt->bindParam(':authid', $authId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
+    // Update coordinator by coordinator ID with individual fields
+    public function updateCoordinator($coordinatorId, $employeecode, $designation, $department, $joiningdate, $remarks)
+    {
+        $stmt = $this->con->prepare(
+            "UPDATE coordinator 
+             SET employeecode = :employeecode,
+                 designation = :designation,
+                 department = :department,
+                 joiningdate = :joiningdate,
+                 remarks = :remarks
+             WHERE coordinatorid = :coordinatorid"
+        );
+
+        $stmt->bindParam(':employeecode', $employeecode);
+        $stmt->bindParam(':designation', $designation);
+        $stmt->bindParam(':department', $department);
+        $stmt->bindParam(':joiningdate', $joiningdate);
+        $stmt->bindParam(':remarks', $remarks);
+        $stmt->bindParam(':coordinatorid', $coordinatorId);
+
+        return $stmt->execute();
+    }
     // admin
     // get all students
     function getStudets()
@@ -292,17 +368,53 @@ class Config
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getConnection()
+    // Fetch all links for a student
+    function getSocialLinks($authid)
     {
-        return $this->con;
+        $stmt = $this->con->prepare("SELECT * FROM sociallinks WHERE authid=? ORDER BY created_at DESC");
+        $stmt->execute([$authid]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Fetch link by platform
+    function getSocialLinkByPlatform($authid, $platform)
+    {
+        $stmt = $this->con->prepare("SELECT * FROM sociallinks WHERE authid=? AND platform=?");
+        $stmt->execute([$authid, $platform]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Insert new link
+    function insertSocialLink($authid, $platform, $link)
+    {
+        $stmt = $this->con->prepare("INSERT INTO sociallinks (authid, platform, link, created_at) VALUES (?, ?, ?, NOW())");
+        return $stmt->execute([$authid, $platform, $link]);
+    }
+
+    // Update existing link
+    function updateSocialLink($slid, $link)
+    {
+        $stmt = $this->con->prepare("UPDATE sociallinks SET link=? WHERE slid=?");
+        return $stmt->execute([$link, $slid]);
+    }
+
+    // Delete link
+    function deleteSocialLink($slid)
+    {
+        $stmt = $this->con->prepare("DELETE FROM sociallinks WHERE slid=?");
+        return $stmt->execute([$slid]);
     }
 
     public function getStudentProfile($authId)
     {
-        $stmt = $this->con->prepare("SELECT * FROM student WHERE authid = :authid LIMIT 1");
+        $stmt = $this->con->prepare("SELECT s.*,a.* FROM student s JOIN auth a ON a.id = s.authid WHERE authid = :authid LIMIT 1");
         $stmt->bindParam(':authid', $authId);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getConnection()
+    {
+        return $this->con;
     }
 }
 
@@ -324,6 +436,7 @@ try {
     password VARCHAR(100) NOT NULL,
     city VARCHAR(100) NOT NULL,
     state VARCHAR(100) NOT NULL,
+    bio TEXT NOT NULL,
     authrole VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP NOT NULL,
     status VARCHAR(255),
@@ -334,7 +447,6 @@ try {
     echo "Error creating table: " . $e->getMessage();
 }
 
-// create student table
 try {
     $create_student = "CREATE TABLE IF NOT EXISTS student (
         sid INT AUTO_INCREMENT PRIMARY KEY,
@@ -358,8 +470,9 @@ try {
         bacheloruniversity VARCHAR(255),
         bacheloryear YEAR,
         bachelorgpa DECIMAL(4,2),
-        bachelorbranch VARCHAR(100),
-        status VARCHAR(100),
+        bachelordegree VARCHAR(100),
+        linkedin VARCHAR(255),
+        github VARCHAR(255),
         FOREIGN KEY (authid) REFERENCES auth(id)
     )";
 
@@ -367,6 +480,7 @@ try {
 } catch (PDOException $e) {
     echo "Error creating table: " . $e->getMessage();
 }
+
 
 // company table
 try {
@@ -406,4 +520,19 @@ try {
     $con->exec($create_coordinator);
 } catch (PDOException $e) {
     echo "Error creating coordinator table: " . $e->getMessage();
+}
+
+try {
+    $create_social_links = "CREATE TABLE IF NOT EXISTS sociallinks (
+        slid INT AUTO_INCREMENT PRIMARY KEY,
+        authid INT NOT NULL,
+        platform VARCHAR(100) NOT NULL,
+        link VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (authid) REFERENCES auth(id) ON DELETE CASCADE
+    )";
+
+    $con->exec($create_social_links);
+} catch (PDOException $e) {
+    echo "Error creating sociallinks table: " . $e->getMessage();
 }

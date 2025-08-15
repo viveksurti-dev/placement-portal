@@ -19,7 +19,10 @@ if (isset($_POST['login'])) {
             $_SESSION['mail'] = $email;
 
             $_SESSION['alert'] = [];
-            $_SESSION['alert'][] = "<strong>Hey! $email </strong>Login Successfully";
+            $_SESSION['alert'][] = [
+                'type' => 'success',
+                'message' => "<strong>Hey! $email </strong>Login Successfully"
+            ];
             echo "<script>window.location.href='" . BASE_URL . "account/';</script>";
             exit();
         } else {

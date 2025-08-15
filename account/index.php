@@ -2,7 +2,6 @@
 require_once '../config.php';
 require_once '../components/navbar.php';
 
-
 if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
     echo "<script>window.location.href = '" . BASE_URL . "auth/login.php';</script>";
     exit;
@@ -15,121 +14,116 @@ if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal - Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL ?>styles/main.css">
+    <style>
+    .dashboard-profile {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
 
+    .profile-image img {
+        width: 100%;
+        max-width: 150px;
+        height: auto;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto;
+        border-radius: 10px;
+        aspect-ratio: 1;
+    }
+
+    .profile-name {
+        text-align: center;
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+
+    .profile-role,
+    .profile-location {
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .option {
+        text-align: center;
+        margin-top: 15px;
+    }
+    </style>
 </head>
 
 <body>
-    <section>
-        <!-- Dashboard  -->
-        <section class="container-dashboard ">
-            <div class="dashboard-content col-md-9 d-flex flex-wrap">
-                <?php
-                if ($auth['authrole'] === 'admin') {
-                    require_once 'admin.php';
-                } else if ($auth['authrole'] === 'student') {
-                    require_once 'student.php';
-                } ?>
-            </div>
-            <div class="dashboard-profile col-md-3">
-                <div class="profile-content">
-                    <div class="profile-menus">
-                        <!-- menus on right side -->
-                    </div>
-                    <div class="profile-image">
-                        <?php if ($auth['userimage']) { ?>
+    <section class="container-fluid mt-2">
+        <div class="row g-3">
+            <!-- Profile Section -->
+            <div class="col-12 col-lg-2 col-md-3 col-sm-5">
+                <div class="dashboard-profile">
+                    <div class="profile-content">
+                        <div class="profile-image">
+                            <?php if ($auth['userimage']) { ?>
                             <img src="<?php echo BASE_URL . 'uploads/auth/' . $auth['userimage']; ?>" alt="User Image">
-                        <?php } else { ?>
+                            <?php } else { ?>
                             <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" alt="User Image">
-                        <?php } ?>
-                    </div>
-                    <div class="profile-name mt-2">
-                        <strong><?php echo $auth['firstname'] . ' ' . $auth['lastname']; ?></strong>
-                    </div>
-                    <div class="profile-role">
-                        <small class="caption"><?php echo $auth['authrole'] ? $auth['authrole'] : " "; ?></small>
-                    </div>
-                    <div class="profile-location">
-                        <small><?php echo $auth['city'] ? $auth['city'] : " ";
+                            <?php } ?>
+                        </div>
+                        <div class="profile-name">
+                            <strong><?php echo $auth['firstname'] . ' ' . $auth['lastname']; ?></strong>
+                        </div>
+                        <div class="profile-role">
+                            <small><?php echo $auth['authrole'] ?: " "; ?></small>
+                        </div>
+                        <div class="profile-location">
+                            <small>
+                                <?php echo $auth['city'] ?: " ";
                                 if ($auth['state']) {
                                     echo ', ';
                                 }
-                                echo $auth['state'] ? $auth['state'] : " " ?></small>
-                    </div>
-                </div>
-
-                <!-- options -->
-                <div class="option">
-                    <a href="<?php echo BASE_URL ?>admin/" class="btn btn-outline-danger">Manage</a>
-                    <?php
-                    $encId = base64_encode($auth['mail']);
-                    ?>
-                    <a href="<?php echo BASE_URL ?>account/editProfile.php?user=<?php echo $encId ?>"
-                        class="btn btn-outline-primary">Edit
-                        Profile</a>
-                </div>
-                <div class="reminders">
-                    <div class="container-reminder">
-                        <div class="reminder">
-                            <div class="reminder-title">
-                                <h5>Reminders</h5>
-                            </div>
-                            <div class="reminder-content">
-                                <p>There are no reminders set.</p>
-                            </div>
+                                echo $auth['state'] ?: " "; ?>
+                            </small>
                         </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="option">
+                        <?php if ($auth['authrole'] === 'admin' || $auth['authrole'] === 'co-ordinator') { ?>
+                        <a href="<?php echo BASE_URL ?>admin/" class="btn btn-outline-danger">Manage</a>
+                        <?php } ?>
+                        <?php $encId = base64_encode($auth['mail']); ?>
+                        <a href="<?php echo BASE_URL ?>account/settings/"
+                            class="btn btn-outline-primary <?php echo $auth['authrole'] === 'student' ? 'w-100' : ''; ?>">Edit
+                            Profile</a>
+                    </div>
+
+                    <!-- Reminders -->
+                    <div class="reminders mt-4">
+                        <h5>Reminders</h5>
+                        <p>There are no reminders set.</p>
                     </div>
                 </div>
             </div>
-        </section>
 
+            <!-- Dashboard Content -->
+            <div class="col-12 col-lg-10 col-md-9 col-sm-7">
+                <div class="dashboard-content">
+                    <?php
+                    if ($auth['authrole'] === 'admin') {
+                        require_once 'admin.php';
+                    } else if ($auth['authrole'] === 'student') {
+                        require_once 'student.php';
+                    }
+                    ?>
+                    <?php require_once '../components/footer.php'; ?>
+                </div>
+
+            </div>
+        </div>
     </section>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 
 </html>
-
-<script>
-    // Wait until the DOM is ready
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get the canvas element
-        var ctx = document.getElementById('comboChart').getContext('2d');
-
-        // Create a new Chart
-        var myComboChart = new Chart(ctx, {
-            type: 'bar', // Start with 'bar' type for bars
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'], // X-axis labels
-                datasets: [{
-                    label: 'Bar Dataset',
-                    data: [12, 19, 3, 5, 2, 3, 9], // Data for bars
-                    backgroundColor: 'rgba(114, 103, 239, 0.85)', // Bar color
-                    borderColor: 'rgb(114, 103, 239)', // Bar border color
-                    borderWidth: 1,
-                    yAxisID: 'y'
-                }, {
-                    label: 'Line Dataset',
-                    data: [7, 11, 5, 8, 6, 3, 4], // Data for line
-                    type: 'line', // Specify type as 'line' for the second dataset
-                    fill: false, // Disable fill for the line chart
-                    borderColor: 'rgba(255, 0, 34, 1)', // Line color
-                    tension: 0.1, // Line smoothness
-                    // yAxisID: 'y1' // Use different y-axis for the line dataset
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        grid: {
-                            display: false, // Disable vertical grid lines
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            }
-        });
-    });
-</script>

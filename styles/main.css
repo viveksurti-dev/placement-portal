@@ -6,8 +6,15 @@
     display: none;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
 body {
-    background-color: #f4f4f4;
+    background: rgba(242, 242, 242, 1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -126,9 +133,9 @@ body {
 .alert-container {
     width: 250px;
     padding: 10px;
-    background-color: rgb(199, 196, 254);
+    /* background-color: rgb(199, 196, 254); */
     border-radius: 5px;
-    color: rgb(29, 0, 86);
+    /* color: rgb(29, 0, 86); */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     position: relative;
     opacity: 1;
@@ -190,10 +197,4 @@ body {
         padding-bottom: 50%;
 
     }
-}
-
-/* admin */
-.container-sidebar {
-    background-color: white;
-    padding: 10px;
 }
