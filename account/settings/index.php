@@ -26,7 +26,7 @@ $page = $_GET['p'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        settings
+        Placement Portal - Settings
     </title>
     <link rel="stylesheet" href="<?php echo BASE_URL ?>styles/main.css">
     <style>
@@ -110,11 +110,15 @@ $page = $_GET['p'] ?? '';
             <div class="sidebar-heading">
                 <small><span class="text-uppercase">settings</small>
             </div>
-            <div class="sidebar-menus mt-5">
-
+            <div class="sidebar-menus ">
+                <div class="text-center my-2">
+                    <small class="caption"><strong>-- Account --</strong></small>
+                </div>
                 <a href="<?php echo BASE_URL ?>account/settings/"
                     class="<?php echo $page === '' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-person-lines-fill"></i> Basic Info
+                    <i class="bi bi-person-lines-fill"></i>
+                    <?php echo $auth['authrole'] === 'company' ? 'HR' : 'Basic' ?>
+                    Info
                 </a>
                 <?php if ($auth['authrole'] === 'student') { ?>
                 <a href="?p=academicdetails/" class="<?php echo $page === 'academicdetails/' ? 'btn-active' : '' ?>">
@@ -127,15 +131,29 @@ $page = $_GET['p'] ?? '';
                     <i class="bi bi-bar-chart-steps"></i> Co-Or Detail
                 </a>
                 <?php } ?>
+                <?php if ($auth['authrole'] === 'company') { ?>
+                <a href="?p=company/" class="<?php echo $page === 'company/' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-building-fill-gear"></i> Company
+                </a>
+                <?php } ?>
                 <a href="?p=sociallinks/" class="<?php echo $page === 'sociallinks/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-link-45deg"></i> Social Links
+                    <i class="bi bi-link-45deg"></i>
+                    <?php echo $auth['authrole'] === 'company' ? 'HR' : '' ?> Social Links
+                </a>
+
+                <div class="text-center my-2">
+                    <small class="caption"><strong>-- Genaral --</strong></small>
+                </div>
+                <a href="?p=terms/" class="<?php echo $page === 'terms/' ? 'btn-active' : '' ?>">
+                    <i class="bi bi-link-45deg"></i>
+                    Terms
                 </a>
             </div>
             <div class="back">
                 <a href="<?php echo BASE_URL ?>?logout" class="btn btn-outline-danger w-100">Logout</a>
             </div>
         </div>
-        <div class="container-admin-content flex-grow-1 p-4">
+        <div class="container-admin-content  flex-grow-1 p-4">
             <?php
 
 
@@ -151,6 +169,12 @@ $page = $_GET['p'] ?? '';
                     break;
                 case 'co-ordinatordetails/':
                     require_once './editCo_ordinator.php';
+                    break;
+                case 'company/':
+                    require_once './editCompany.php';
+                    break;
+                case 'terms/':
+                    require_once './terms_conditions.php';
                     break;
 
                 default:

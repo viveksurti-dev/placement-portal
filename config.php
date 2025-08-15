@@ -315,8 +315,63 @@ class Config
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    // company
+    // Get company by authid
+    public function getCompany($authid)
+    {
+        $stmt = $this->con->prepare("SELECT * FROM company WHERE authid = :authid LIMIT 1");
+
+        $stmt->bindParam(':authid', $authid);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    // Update company profile
+    public function updateCompanyProfile($authid, $cname, $ctype, $cweb, $cabout, $csize, $cspecialization, $caddress, $clinkedin)
+    {
+        $stmt = $this->con->prepare("
+        UPDATE company SET 
+            cname = :cname, 
+            ctype = :ctype, 
+            cweb = :cweb, 
+            cabout = :cabout, 
+            csize = :csize, 
+            cspecialization = :cspecialization, 
+            caddress = :caddress, 
+            clinkedin = :clinkedin
+        WHERE authid = :authid
+    ");
+
+        $stmt->bindParam(':cname', $cname);
+        $stmt->bindParam(':ctype', $ctype);
+        $stmt->bindParam(':cweb', $cweb);
+        $stmt->bindParam(':cabout', $cabout);
+        $stmt->bindParam(':csize', $csize);
+        $stmt->bindParam(':cspecialization', $cspecialization);
+        $stmt->bindParam(':caddress', $caddress);
+        $stmt->bindParam(':clinkedin', $clinkedin);
+        $stmt->bindParam(':authid', $authid);
+
+        return $stmt->execute();
+    }
+
+    // Update company image only
+    public function updateCompanyImage($authid, $cimage)
+    {
+        $stmt = $this->con->prepare("
+        UPDATE company SET cimage = :cimage 
+        WHERE authid = :authid
+    ");
+
+        $stmt->bindParam(':cimage', $cimage);
+        $stmt->bindParam(':authid', $authid);
+
+        return $stmt->execute();
+    }
+
+
     // co-ordinator
-    // Get coordinator by auth ID
+    // Get coordinator 
     public function getCoordinator($authId)
     {
         $stmt = $this->con->prepare("SELECT * FROM coordinator WHERE authid = :authid");
@@ -325,7 +380,7 @@ class Config
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Update coordinator by coordinator ID with individual fields
+    // Update coordinator
     public function updateCoordinator($coordinatorId, $employeecode, $designation, $department, $joiningdate, $remarks)
     {
         $stmt = $this->con->prepare(
