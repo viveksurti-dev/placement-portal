@@ -20,10 +20,12 @@ if (isset($_POST['upload'])) {
                 'type' => 'danger',
                 'message' => "Company Logo Not Uploaded "
             ];
-            // echo "<script>window.location.href='';</script>";
-            // exit;
+            echo "<script>window.location.href='';</script>";
+            exit;
         }
     }
+    echo "<script>window.location.href='';</script>";
+    exit;
 }
 
 if (isset($_POST['update_company'])) {

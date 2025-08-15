@@ -92,7 +92,8 @@ if (isset($_POST['logout'])) {
     <div class="alert-wrapper">
         <?php if (!empty($_SESSION['alert'])): ?>
         <?php foreach ($_SESSION['alert'] as $alert): ?>
-        <div class="alert-container slide-in alert-<?php echo $alert['type'] ?>">
+        <div
+            class="alert-container slide-in alert <?php echo $alert['type'] === 'success' ? 'alert-success' : 'alert-danger'; ?>">
             <div class="alert-head">
                 <small><strong><?= ucfirst($alert['type']) ?>!</strong></small>
             </div>

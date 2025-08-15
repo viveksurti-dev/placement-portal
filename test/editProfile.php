@@ -22,30 +22,30 @@ $auths = base64_encode($auth['mail']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo BASE_URL ?>styles/main.css">
     <style>
-        .profile-image {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto;
-            overflow: hidden;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .profile-image {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-        .profile-image .auth-img {
-            object-fit: cover;
-            width: 100%;
-            height: 100%;
-        }
+    .profile-image .auth-img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
 
-        .card {
-            border-radius: 10px;
-        }
+    .card {
+        border-radius: 10px;
+    }
 
-        .form-label {
-            font-weight: 500;
-        }
+    .form-label {
+        font-weight: 500;
+    }
     </style>
 </head>
 
@@ -60,11 +60,11 @@ $auths = base64_encode($auth['mail']);
                         <hr>
                         <div class="profile-image mb-3">
                             <?php if (!empty($auth['userimage'])) { ?>
-                                <img src="<?php echo BASE_URL . 'uploads/auth/' . $auth['userimage']; ?>"
-                                    class="auth-img img-fluid rounded" alt="User Image">
+                            <img src="<?php echo BASE_URL . 'uploads/auth/' . $auth['userimage']; ?>"
+                                class="auth-img img-fluid rounded" alt="User Image">
                             <?php } else { ?>
-                                <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" class="auth-img img-fluid rounded"
-                                    alt="User Image">
+                            <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" class="auth-img img-fluid rounded"
+                                alt="User Image">
                             <?php } ?>
                         </div>
                         <form method="POST">
@@ -152,10 +152,10 @@ $auths = base64_encode($auth['mail']);
 
         <?php } else if ($auth['authrole'] === 'co-ordinator') { ?>
         <?php } else if ($auth['authrole'] === 'comapany') { ?>
-            <div class=" container">
-            </div>
+        <div class=" container">
+        </div>
         <?php } else { ?>
-            <?php
+        <?php
 
             $studentData = $obj->getStudentProfile($authId);
 
@@ -188,204 +188,204 @@ $auths = base64_encode($auth['mail']);
                 exit;
             }
             ?>
-            <section>
-                <div class="container mt-3">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h4 class="mb-0">Edit Student Profile</h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="#" method="POST" enctype="multipart/form-data">
-                                <ul class="nav nav-tabs mb-3" id="formTabs" role="tablist">
-                                    <li class="nav-item">
-                                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personal"
-                                            type="button">Personal</button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#education"
-                                            type="button">Education</button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents"
-                                            type="button">Documents</button>
-                                    </li>
-                                </ul>
-                                <div class="tab-content" id="formTabsContent">
-                                    <!-- Personal Tab -->
-                                    <div class="tab-pane fade show active" id="personal">
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label class="form-label">Student ID</label>
-                                                <input type="text" name="studentid" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['studentid'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Branch</label>
-                                                <input type="text" name="branch" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['branch'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">CGPA</label>
-                                                <input type="number" step="0.01" name="cgpa" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['cgpa'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Skills</label>
-                                                <input type="text" name="skills" class="form-control"
-                                                    placeholder="e.g., Python, React, SQL"
-                                                    value="<?= htmlspecialchars($studentData['skills'] ?? '') ?>">
-                                            </div>
+        <section>
+            <div class="container mt-3">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h4 class="mb-0">Edit Student Profile</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="#" method="POST" enctype="multipart/form-data">
+                            <ul class="nav nav-tabs mb-3" id="formTabs" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personal"
+                                        type="button">Personal</button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#education"
+                                        type="button">Education</button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#documents"
+                                        type="button">Documents</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="formTabsContent">
+                                <!-- Personal Tab -->
+                                <div class="tab-pane fade show active" id="personal">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Student ID</label>
+                                            <input type="text" name="studentid" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['studentid'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Branch</label>
+                                            <input type="text" name="branch" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['branch'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">CGPA</label>
+                                            <input type="number" step="0.01" name="cgpa" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['cgpa'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Skills</label>
+                                            <input type="text" name="skills" class="form-control"
+                                                placeholder="e.g., Python, React, SQL"
+                                                value="<?= htmlspecialchars($studentData['skills'] ?? '') ?>">
                                         </div>
                                     </div>
-                                    <!-- Education Tab -->
-                                    <div class="tab-pane fade" id="education">
-                                        <div class="row g-3 mt-3">
-                                            <h5>10th Details</h5>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Passing Year</label>
-                                                <input type="number" name="pass10year" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass10year'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Board</label>
-                                                <input type="text" name="pass10board" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass10board'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Percentage</label>
-                                                <input type="number" step="0.01" name="pass10percentage"
-                                                    class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass10percentage'] ?? '') ?>">
-                                            </div>
-                                            <h5 class="mt-4">12th Details</h5>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Passing Year</label>
-                                                <input type="number" name="pass12year" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass12year'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Board</label>
-                                                <input type="text" name="pass12board" class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass12board'] ?? '') ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Percentage</label>
-                                                <input type="number" step="0.01" name="pass12percentage"
-                                                    class="form-control"
-                                                    value="<?= htmlspecialchars($studentData['pass12percentage'] ?? '') ?>">
-                                            </div>
-                                            <!-- Degree Type Selector -->
-                                            <div class="col-md-4">
-                                                <label class="form-label">Degree Type</label>
-                                                <select name="degree_type" id="degree_type" class="form-select">
-                                                    <option value="">Select</option>
-                                                    <option value="diploma"
-                                                        <?= ($studentData['degree_type'] ?? '') === 'diploma' ? 'selected' : '' ?>>
-                                                        Diploma</option>
-                                                    <option value="bachelor"
-                                                        <?= ($studentData['degree_type'] ?? '') === 'bachelor' ? 'selected' : '' ?>>
-                                                        Bachelor</option>
-                                                </select>
-                                            </div>
+                                </div>
+                                <!-- Education Tab -->
+                                <div class="tab-pane fade" id="education">
+                                    <div class="row g-3 mt-3">
+                                        <h5>10th Details</h5>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Passing Year</label>
+                                            <input type="number" name="pass10year" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass10year'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Board</label>
+                                            <input type="text" name="pass10board" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass10board'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Percentage</label>
+                                            <input type="number" step="0.01" name="pass10percentage"
+                                                class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass10percentage'] ?? '') ?>">
+                                        </div>
+                                        <h5 class="mt-4">12th Details</h5>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Passing Year</label>
+                                            <input type="number" name="pass12year" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass12year'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Board</label>
+                                            <input type="text" name="pass12board" class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass12board'] ?? '') ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Percentage</label>
+                                            <input type="number" step="0.01" name="pass12percentage"
+                                                class="form-control"
+                                                value="<?= htmlspecialchars($studentData['pass12percentage'] ?? '') ?>">
+                                        </div>
+                                        <!-- Degree Type Selector -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Degree Type</label>
+                                            <select name="degree_type" id="degree_type" class="form-select">
+                                                <option value="">Select</option>
+                                                <option value="diploma"
+                                                    <?= ($studentData['degree_type'] ?? '') === 'diploma' ? 'selected' : '' ?>>
+                                                    Diploma</option>
+                                                <option value="bachelor"
+                                                    <?= ($studentData['degree_type'] ?? '') === 'bachelor' ? 'selected' : '' ?>>
+                                                    Bachelor</option>
+                                            </select>
+                                        </div>
 
-                                            <!-- Diploma Fields -->
-                                            <div id="diploma_fields" style="display:none;">
-                                                <h5 class="mt-4">Diploma</h5>
-                                                <div class="row g-3">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Institute</label>
-                                                        <input type="text" name="diplomainstitute" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['diplomainstitute'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Year</label>
-                                                        <input type="number" name="diplomayear" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['diplomayear'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Percentage</label>
-                                                        <input type="number" step="0.01" name="diplomapercentage"
-                                                            class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['diplomapercentage'] ?? '') ?>">
-                                                    </div>
+                                        <!-- Diploma Fields -->
+                                        <div id="diploma_fields" style="display:none;">
+                                            <h5 class="mt-4">Diploma</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Institute</label>
+                                                    <input type="text" name="diplomainstitute" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['diplomainstitute'] ?? '') ?>">
                                                 </div>
-                                            </div>
-
-                                            <!-- Bachelor Fields -->
-                                            <div id="bachelor_fields" style="display:none;">
-                                                <h5 class="mt-4">Bachelor’s Degree</h5>
-                                                <div class="row g-3">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Degree</label>
-                                                        <select name="bachelortype" class="form-select">
-                                                            <option value="">Select</option>
-                                                            <option value="B.E"
-                                                                <?= ($studentData['bachelortype'] ?? '') === 'B.E' ? 'selected' : '' ?>>
-                                                                B.E</option>
-                                                            <option value="B.Tech"
-                                                                <?= ($studentData['bachelortype'] ?? '') === 'B.Tech' ? 'selected' : '' ?>>
-                                                                B.Tech</option>
-                                                            <option value="B.Sc"
-                                                                <?= ($studentData['bachelortype'] ?? '') === 'B.Sc' ? 'selected' : '' ?>>
-                                                                B.Sc</option>
-                                                            <option value="Other"
-                                                                <?= ($studentData['bachelortype'] ?? '') === 'Other' ? 'selected' : '' ?>>
-                                                                Other</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">University</label>
-                                                        <input type="text" name="bacheloruniversity" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['bacheloruniversity'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Passing Year</label>
-                                                        <input type="number" name="bacheloryear" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['bacheloryear'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">CGPA</label>
-                                                        <input type="number" step="0.01" name="bachelorgpa"
-                                                            class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['bachelorgpa'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Branch</label>
-                                                        <input type="text" name="bachelorbranch" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['bachelorbranch'] ?? '') ?>">
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label">Course</label>
-                                                        <input type="text" name="bachelorcourse" class="form-control"
-                                                            value="<?= htmlspecialchars($studentData['bachelorcourse'] ?? '') ?>">
-                                                    </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Year</label>
+                                                    <input type="number" name="diplomayear" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['diplomayear'] ?? '') ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Percentage</label>
+                                                    <input type="number" step="0.01" name="diplomapercentage"
+                                                        class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['diplomapercentage'] ?? '') ?>">
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <!-- Documents Tab -->
-                                    <div class="tab-pane fade" id="documents">
-                                        <div class="row g-3 mt-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Upload Resume (PDF)</label>
-                                                <?php if (!empty($studentData['resume'])): ?>
-                                                    <div>
-                                                        <a href="../<?= htmlspecialchars($studentData['resume']) ?>"
-                                                            target="_blank">View
-                                                            Uploaded Resume</a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <input type="file" name="resume" accept=".pdf" class="form-control">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Upload Certificates</label>
 
-                                                <input type="file" name="certificate[]" multiple class="form-control">
+                                        <!-- Bachelor Fields -->
+                                        <div id="bachelor_fields" style="display:none;">
+                                            <h5 class="mt-4">Bachelor’s Degree</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Degree</label>
+                                                    <select name="bachelortype" class="form-select">
+                                                        <option value="">Select</option>
+                                                        <option value="B.E"
+                                                            <?= ($studentData['bachelortype'] ?? '') === 'B.E' ? 'selected' : '' ?>>
+                                                            B.E</option>
+                                                        <option value="B.Tech"
+                                                            <?= ($studentData['bachelortype'] ?? '') === 'B.Tech' ? 'selected' : '' ?>>
+                                                            B.Tech</option>
+                                                        <option value="B.Sc"
+                                                            <?= ($studentData['bachelortype'] ?? '') === 'B.Sc' ? 'selected' : '' ?>>
+                                                            B.Sc</option>
+                                                        <option value="Other"
+                                                            <?= ($studentData['bachelortype'] ?? '') === 'Other' ? 'selected' : '' ?>>
+                                                            Other</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">University</label>
+                                                    <input type="text" name="bacheloruniversity" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['bacheloruniversity'] ?? '') ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Passing Year</label>
+                                                    <input type="number" name="bacheloryear" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['bacheloryear'] ?? '') ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">CGPA</label>
+                                                    <input type="number" step="0.01" name="bachelorgpa"
+                                                        class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['bachelorgpa'] ?? '') ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Branch</label>
+                                                    <input type="text" name="bachelorbranch" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['bachelorbranch'] ?? '') ?>">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Course</label>
+                                                    <input type="text" name="bachelorcourse" class="form-control"
+                                                        value="<?= htmlspecialchars($studentData['bachelorcourse'] ?? '') ?>">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6"></div>
+                                    </div>
+                                </div>
+                                <!-- Documents Tab -->
+                                <div class="tab-pane fade" id="documents">
+                                    <div class="row g-3 mt-3">
                                         <div class="col-md-6">
-                                            <?php
+                                            <label class="form-label">Upload Resume (PDF)</label>
+                                            <?php if (!empty($studentData['resume'])): ?>
+                                            <div>
+                                                <a href="../<?= htmlspecialchars($studentData['resume']) ?>"
+                                                    target="_blank">View
+                                                    Uploaded Resume</a>
+                                            </div>
+                                            <?php endif; ?>
+                                            <input type="file" name="resume" accept=".pdf" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Upload Certificates</label>
+
+                                            <input type="file" name="certificate[]" multiple class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                        <?php
                                             if (!empty($studentData['certificate'])) {
                                                 $certs = explode(',', $studentData['certificate']);
                                                 foreach ($certs as $cert) {
@@ -393,55 +393,55 @@ $auths = base64_encode($auth['mail']);
                                                 }
                                             }
                                             ?>
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="mt-4 text-end">
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    <button type="reset" class="btn btn-outline-secondary ms-2">Reset</button>
-                                </div>
-                            </form>
+                            </div>
+                            <div class="mt-4 text-end">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="reset" class="btn btn-outline-secondary ms-2">Reset</button>
+                            </div>
+                        </form>
 
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <section class="container mt-4">
+            <div class="row">
+                <!-- Resume Preview Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Resume Preview</h5>
+                            <?php if (!empty($studentData['resume'])): ?>
+                            <div class="mb-2">
+                                <strong>Uploaded Resume:</strong><br>
+                                <a href="../<?= htmlspecialchars($studentData['resume']) ?>" target="_blank"
+                                    class="btn btn-outline-primary btn-sm mt-1">
+                                    <?= htmlspecialchars(basename($studentData['resume'])) ?>
+                                </a>
+                                <a href="?delete_resume=1&user=<?= urlencode($_GET['user']) ?>"
+                                    class="btn btn-outline-danger btn-sm ms-2"
+                                    onclick="return confirm('Are you sure you want to delete the resume?')">
+                                    Delete
+                                </a>
+                            </div>
+                            <?php else: ?>
+                            <p class="text-muted">No resume uploaded.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
-            </section>
-            <section class="container mt-4">
-                <div class="row">
-                    <!-- Resume Preview Section -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">Resume Preview</h5>
-                                <?php if (!empty($studentData['resume'])): ?>
-                                    <div class="mb-2">
-                                        <strong>Uploaded Resume:</strong><br>
-                                        <a href="../<?= htmlspecialchars($studentData['resume']) ?>" target="_blank"
-                                            class="btn btn-outline-primary btn-sm mt-1">
-                                            <?= htmlspecialchars(basename($studentData['resume'])) ?>
-                                        </a>
-                                        <a href="?delete_resume=1&user=<?= urlencode($_GET['user']) ?>"
-                                            class="btn btn-outline-danger btn-sm ms-2"
-                                            onclick="return confirm('Are you sure you want to delete the resume?')">
-                                            Delete
-                                        </a>
-                                    </div>
-                                <?php else: ?>
-                                    <p class="text-muted">No resume uploaded.</p>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Certificate List Section -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-success">Certificates</h5>
-                                <?php if (!empty($studentData['certificate'])): ?>
-                                    <ul class="list-group">
-                                        <?php
+                <!-- Certificate List Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Certificates</h5>
+                            <?php if (!empty($studentData['certificate'])): ?>
+                            <ul class="list-group">
+                                <?php
                                         $certs = explode(',', $studentData['certificate']);
                                         foreach ($certs as $cert) {
                                             $cert = trim($cert);
@@ -455,34 +455,34 @@ $auths = base64_encode($auth['mail']);
                                             echo '</li>';
                                         }
                                         ?>
-                                    </ul>
-                                <?php else: ?>
-                                    <p class="text-muted">No certificates uploaded.</p>
-                                <?php endif; ?>
-                            </div>
+                            </ul>
+                            <?php else: ?>
+                            <p class="text-muted">No certificates uploaded.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
         <?php } ?>
 
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            function toggleDegreeFields() {
-                var degreeType = document.getElementById('degree_type').value;
-                document.getElementById('diploma_fields').style.display = (degreeType === 'diploma') ? 'block' :
-                    'none';
-                document.getElementById('bachelor_fields').style.display = (degreeType === 'bachelor') ?
-                    'block' : 'none';
-            }
+        function toggleDegreeFields() {
+            var degreeType = document.getElementById('degree_type').value;
+            document.getElementById('diploma_fields').style.display = (degreeType === 'diploma') ? 'block' :
+                'none';
+            document.getElementById('bachelor_fields').style.display = (degreeType === 'bachelor') ?
+                'block' : 'none';
+        }
 
-            // On page load
-            document.addEventListener('DOMContentLoaded', function() {
-                toggleDegreeFields();
-                document.getElementById('degree_type').addEventListener('change', toggleDegreeFields);
-            });
+        // On page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleDegreeFields();
+            document.getElementById('degree_type').addEventListener('change', toggleDegreeFields);
+        });
         </script>
     </section>
 </body>
