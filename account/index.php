@@ -92,8 +92,7 @@ if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
                         <?php } ?>
                         <?php $encId = base64_encode($auth['mail']); ?>
                         <a href="<?php echo BASE_URL ?>account/settings/"
-                            class="btn btn-outline-primary <?php echo $auth['authrole'] === 'student' ? 'w-100' : ''; ?>">Edit
-                            Profile</a>
+                            class="btn btn-outline-primary <?php echo $auth['authrole'] === 'student' ? 'w-100' : ''; ?>">Settings</a>
                     </div>
 
                     <!-- Reminders -->
@@ -116,7 +115,6 @@ if ($isLoggedIn === false && !isset($_SESSION['mail'])) {
                     ?>
                     <?php require_once '../components/footer.php'; ?>
                 </div>
-
             </div>
         </div>
     </section>

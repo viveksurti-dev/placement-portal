@@ -55,9 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_slid'])) {
 ?>
 
 
-<section class="container mt-4">
-
-    <!-- Social Links Card -->
+<section class="container-fluid mt-4">
     <div class="card shadow-sm mb-4">
         <div
             class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center flex-wrap">

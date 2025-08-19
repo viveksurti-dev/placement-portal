@@ -30,77 +30,76 @@ $page = $_GET['p'] ?? '';
     </title>
     <link rel="stylesheet" href="<?php echo BASE_URL ?>styles/main.css">
     <style>
-    .container-sidebar {
-        width: 250px;
-        height: 91.4vh;
-        background: #f8f9fa;
-        border-right: 1px solid #ddd;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+        .container-sidebar {
+            width: 250px;
+            height: 91.4vh;
+            background: #f8f9fa;
+            border-right: 1px solid #ddd;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-    .sidebar-menus .btn-active {
-        background-color: #d5d5d5ff;
-        border: 1px solid gray;
-        color: #252525ff;
-        font-weight: 600;
-    }
+        .sidebar-menus .btn-active {
+            background-color: #d5d5d5ff;
+            border: 1px solid gray;
+            color: #252525ff;
+            font-weight: 600;
+        }
 
+        .sidebar-heading {
+            padding: 20px 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            background-color: #ddd;
+            margin: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
 
-    .sidebar-heading {
-        padding: 20px 10px 20px 10px;
-        font-weight: bold;
-        font-size: 1.2rem;
-        background-color: #ddd;
-        margin: 10px;
-        text-align: center;
-        border-radius: 5px;
-    }
+        .sidebar-menus {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 10px;
+        }
 
-    .sidebar-menus {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 0 10px;
-    }
+        .sidebar-menus i {
+            font-size: 18px;
+            margin: 0px 10px 0px 0px;
+            font-weight: bold;
+        }
 
-    .sidebar-menus i {
-        font-size: 18px;
-        margin: 0px 10px 0px 0px;
-        font-weight: bold;
-    }
+        .sidebar-menus a,
+        .sidebar-menus button {
+            border: 1px solid gray;
+            text-align: left;
+            width: 100%;
+            background: #f3f3f3ff;
+            border: 1px solid gray;
+            color: #6d6d6dff;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            font-size: 14px;
+            text-decoration: none;
+        }
 
-    .sidebar-menus a,
-    .sidebar-menus button {
-        border: 1px solid gray;
-        text-align: left;
-        width: 100%;
-        background: #f3f3f3ff;
-        border: 1px solid gray;
-        color: #6d6d6dff;
-        padding: 10px 15px;
-        border-radius: 4px;
-        transition: background 0.2s;
-        font-size: 1rem;
-        text-decoration: none;
-    }
+        .sidebar-menus a:hover,
+        .sidebar-menus button:hover {
+            background: #d6d6d6ff;
+            color: black;
+        }
 
-    .sidebar-menus a:hover,
-    .sidebar-menus button:hover {
-        background: #d6d6d6ff;
-        color: black;
-    }
+        .back {
+            padding: 10px;
+        }
 
-    .back {
-        padding: 10px;
-    }
+        .container-admin-content {
+            height: 91.4vh;
+            overflow-y: scroll;
 
-    .container-admin-content {
-        height: 91.4vh;
-        overflow-y: scroll;
-
-    }
+        }
     </style>
 </head>
 
@@ -121,20 +120,20 @@ $page = $_GET['p'] ?? '';
                     Info
                 </a>
                 <?php if ($auth['authrole'] === 'student') { ?>
-                <a href="?p=academicdetails/" class="<?php echo $page === 'academicdetails/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-book-half"></i> Academic
-                </a>
+                    <a href="?p=academicdetails/" class="<?php echo $page === 'academicdetails/' ? 'btn-active' : '' ?>">
+                        <i class="bi bi-book-half"></i> Academic
+                    </a>
                 <?php } ?>
                 <?php if ($auth['authrole'] === 'co-ordinator') { ?>
-                <a href="?p=co-ordinatordetails/"
-                    class="<?php echo $page === 'co-ordinatordetails/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-bar-chart-steps"></i> Co-Or Detail
-                </a>
+                    <a href="?p=co-ordinatordetails/"
+                        class="<?php echo $page === 'co-ordinatordetails/' ? 'btn-active' : '' ?>">
+                        <i class="bi bi-bar-chart-steps"></i> Co-Or Detail
+                    </a>
                 <?php } ?>
                 <?php if ($auth['authrole'] === 'company') { ?>
-                <a href="?p=company/" class="<?php echo $page === 'company/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-building-fill-gear"></i> Company
-                </a>
+                    <a href="?p=company/" class="<?php echo $page === 'company/' ? 'btn-active' : '' ?>">
+                        <i class="bi bi-building-fill-gear"></i> Company
+                    </a>
                 <?php } ?>
                 <a href="?p=sociallinks/" class="<?php echo $page === 'sociallinks/' ? 'btn-active' : '' ?>">
                     <i class="bi bi-link-45deg"></i>
@@ -145,7 +144,7 @@ $page = $_GET['p'] ?? '';
                     <small class="caption"><strong>-- Genaral --</strong></small>
                 </div>
                 <a href="?p=terms/" class="<?php echo $page === 'terms/' ? 'btn-active' : '' ?>">
-                    <i class="bi bi-link-45deg"></i>
+                    <i class="bi bi-file-earmark-text-fill"></i>
                     Terms
                 </a>
             </div>

@@ -467,6 +467,23 @@ class Config
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    function getUserProfile($user, $role)
+    {
+        $role = str_replace('-', '', strtolower($role));
+
+        $stmt = $this->con->prepare(
+            "SELECT a.*, t.*, l.*
+         FROM auth a 
+         JOIN {$role} t ON t.authid = a.id 
+         LEFT JOIN sociallinks l ON l.authid = a.id
+         WHERE a.mail = :user 
+         LIMIT 1"
+        );
+        $stmt->bindParam(':user', $user);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getConnection()
     {
         return $this->con;

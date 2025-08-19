@@ -39,34 +39,34 @@ $students = $opr->getStudets();
             </thead>
             <tbody>
                 <?php foreach ($students as $student) { ?>
-                <tr>
-                    <td>
-                        <?php if ($student['userimage']) { ?>
-                        <img src="<?php echo BASE_URL . 'uploads/auth/' . $student['userimage']; ?>" alt="User Image"
-                            height="50" width="50" class="rounded-1 object-fit-cover">
-                        <?php } else { ?>
-                        <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" alt="Default Image" height="50"
-                            width="50" class="rounded-1 object-fit-cover">
-                        <?php } ?>
-                    </td>
-                    <td><?php echo $student['studentid']; ?></td>
-                    <td><?php echo $student['firstname'] . ' ' . $student['middlename'] . ' ' . $student['lastname']; ?>
-                    </td>
-                    <td><?php echo $student['gender']; ?></td>
-                    <td><?php echo $student['mail']; ?></td>
-                    <td><?php echo $student['contact']; ?></td>
-                    <td><?php echo $student['branch']; ?></td>
-                    <td><?php echo $student['cgpa']; ?></td>
-                    <td><?php echo $student['status']; ?></td>
-                    <td>
-                        <!-- Example action buttons -->
-                        <a href="view.php?id=<?php echo $student['studentid']; ?>" class="btn btn-primary p-3"><i
-                                class="bi bi-view-list"></i></a>
-                        <a href="edit.php?id=<?php echo $student['studentid']; ?>" class="btn  btn-warning p-3"><i
-                                class="bi bi-pencil-square"></i></a>
+                    <tr>
+                        <td>
+                            <?php if ($student['userimage']) { ?>
+                                <img src="<?php echo BASE_URL . 'uploads/auth/' . $student['userimage']; ?>" alt="User Image"
+                                    height="50" width="50" class="rounded-1 object-fit-cover">
+                            <?php } else { ?>
+                                <img src="<?php echo BASE_URL; ?>uploads/auth/unkown.png" alt="Default Image" height="50"
+                                    width="50" class="rounded-1 object-fit-cover">
+                            <?php } ?>
+                        </td>
+                        <td><?php echo $student['studentid']; ?></td>
+                        <td><?php echo $student['firstname'] . ' ' . $student['middlename'] . ' ' . $student['lastname']; ?>
+                        </td>
+                        <td><?php echo $student['gender']; ?></td>
+                        <td><?php echo $student['mail']; ?></td>
+                        <td><?php echo $student['contact']; ?></td>
+                        <td><?php echo $student['branch']; ?></td>
+                        <td><?php echo $student['cgpa']; ?></td>
+                        <td><?php echo $student['status']; ?></td>
+                        <td>
+                            <!-- Example action buttons -->
+                            <a href="<?php echo BASE_URL; ?>accountdetails?u=<?php echo base64_encode(base64_encode($student['mail'])) ?>&r=<?php echo $student['authrole'] ?>"
+                                class="btn btn-primary p-3"><i class="bi bi-view-list"></i></a>
+                            <a href="edit.php?id=<?php echo $student['studentid']; ?>" class="btn  btn-warning p-3"><i
+                                    class="bi bi-pencil-square"></i></a>
 
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 <?php } ?>
             </tbody>
         </table>

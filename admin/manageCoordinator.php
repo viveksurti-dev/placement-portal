@@ -55,8 +55,8 @@ $coordinators = $opr->getCoordinators();
                         <td><?php echo $cordinator['department']; ?></td>
                         <td>
                             <!-- Example action buttons -->
-                            <a href="view.php?id=<?php echo $cordinator['authid']; ?>" class="btn btn-primary p-3"><i
-                                    class="bi bi-view-list"></i></a>
+                            <a href="<?php echo BASE_URL; ?>accountdetails?u=<?php echo base64_encode(base64_encode($cordinator['mail'])) ?>&r=<?php echo $cordinator['authrole'] ?>"
+                                class="btn btn-primary p-3"><i class="bi bi-view-list"></i></a>
 
                         </td>
                     </tr>

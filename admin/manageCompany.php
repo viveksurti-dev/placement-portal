@@ -55,8 +55,8 @@ $companies = $opr->getCompanies();
                         <td><?php echo $company['status']; ?></td>
                         <td>
                             <!-- Example action buttons -->
-                            <a href="view.php?id=<?php echo $company['cid']; ?>" class="btn btn-primary p-3"><i
-                                    class="bi bi-view-list"></i></a>
+                            <a href="<?php echo BASE_URL; ?>accountdetails?u=<?php echo base64_encode(base64_encode($company['mail'])) ?>&r=<?php echo $company['authrole'] ?>"
+                                class="btn btn-primary p-3"><i class="bi bi-view-list"></i></a>
                             <a href="edit.php?id=<?php echo $company['cid']; ?>" class="btn  btn-warning p-3"><i
                                     class="bi bi-pencil-square"></i></a>
 
