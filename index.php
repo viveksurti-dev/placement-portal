@@ -2,8 +2,39 @@
 require_once 'config.php';
 require_once './components/navbar.php';
 
-// $admin = 'Admin@123';
-// echo $pass = password_hash('Admin@123', PASSWORD_DEFAULT);
+// Get dynamic data for the homepage
+$totalStudents = 0;
+$totalCompanies = 0;
+$totalCoordinators = 0;
+$recentStudents = [];
+$recentCompanies = [];
+
+try {
+    // Use $con from config.php or adjust as per your config file
+    // $con = $opr->con;
+    // If config.php defines $con, just use it directly:
+    // (Remove or comment out this line if $con is already available)
+
+    $stmt = $con->query("SELECT COUNT(*) as count FROM student s JOIN auth a ON a.id = s.authid WHERE a.authrole = 'student'");
+    $totalStudents = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    $stmt = $con->query("SELECT COUNT(*) as count FROM company c JOIN auth a ON a.id = c.authid WHERE a.authrole = 'company'");
+    $totalCompanies = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    $stmt = $con->query("SELECT COUNT(*) as count FROM coordinator co JOIN auth a ON a.id = co.authid WHERE a.authrole = 'co-ordinator'");
+    $totalCoordinators = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    // Get recent students
+    $stmt = $con->query("SELECT a.firstname, a.lastname, s.branch, s.cgpa, a.userimage FROM student s JOIN auth a ON a.id = s.authid WHERE a.authrole = 'student' ORDER BY s.id DESC LIMIT 6");
+    $recentStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Get recent companies
+    $stmt = $con->query("SELECT c.cname, c.ctype, c.csize, a.userimage FROM company c JOIN auth a ON a.id = c.authid WHERE a.authrole = 'company' ORDER BY c.id DESC LIMIT 6");
+    $recentCompanies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    // Handle errors gracefully
+    error_log("Database error: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,430 +43,918 @@ require_once './components/navbar.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PORTAL - HOME</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="./styles/main.css">
+    <title>Placement Portal - Connect, Grow, Succeed</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <style>
-        /* Lazy load animation */
-        .lazy-section {
-            opacity: 0;
-            transform: translateY(40px) scale(0.98);
-            transition: opacity 0.8s cubic-bezier(.4, 2, .3, 1), transform 0.8s cubic-bezier(.4, 2, .3, 1);
-            will-change: opacity, transform;
+        :root {
+            --primary-color: #6c63ff;
+            --primary-light: rgba(108, 99, 255, 0.1);
+            --primary-dark: rgba(108, 99, 255, 0.85);
+            --secondary-color: #8b5cf6;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8f9ff;
+            --dark-text: #1f2937;
+            --muted-text: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 2px 4px rgba(108, 99, 255, 0.1);
+            --shadow-md: 0 4px 12px rgba(108, 99, 255, 0.15);
+            --shadow-lg: 0 8px 24px rgba(108, 99, 255, 0.2);
+            --gradient-primary: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+            --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(108, 99, 255, 0.1);
         }
 
-        .lazy-section.loaded {
-            opacity: 1;
-            transform: none;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Animated gradient for hero */
-        .hero-bg {
-            background: linear-gradient(120deg, #0d6efd 60%, #6ea8fe 100%);
-            background-size: 200% 200%;
-            animation: gradientMove 6s ease-in-out infinite alternate;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #e8ebff 100%);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        @keyframes gradientMove {
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #6c63ff 50%, #8b5cf6 75%, #a855f7 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0.6;
+        }
+
+        @keyframes gradientShift {
             0% {
                 background-position: 0% 50%;
             }
 
-            100% {
+            50% {
                 background-position: 100% 50%;
             }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
-        /* Animated underline for headings */
-        .section-title {
-            display: inline-block;
+        .hero-content {
             position: relative;
-            padding-bottom: 0.3em;
+            z-index: 2;
+            color: white;
         }
 
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 60%;
-            height: 3px;
-            background: linear-gradient(90deg, #0d6efd 60%, #6ea8fe 100%);
-            border-radius: 2px;
-            position: absolute;
-            left: 20%;
-            bottom: 0;
-            animation: underlineGrow 1.2s cubic-bezier(.4, 2, .3, 1);
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
         }
 
-        @keyframes underlineGrow {
-            from {
-                width: 0;
+        @keyframes titleGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
             }
 
-            to {
-                width: 60%;
+            100% {
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6));
             }
         }
 
-        /* Card and button hover/active effects */
-        .feature-card,
-        .card {
-            transition: transform 0.25s cubic-bezier(.4, 2, .3, 1), box-shadow 0.25s;
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
         }
 
-        .feature-card:hover,
-        .card:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 32px rgba(13, 110, 253, 0.18);
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
         }
 
-        .gradient-btn {
+        .hero-stat {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            min-width: 120px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hero-stat:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: none;
             position: relative;
             overflow: hidden;
         }
 
-        .gradient-btn:active::after {
+        .btn-primary-hero::before {
             content: '';
             position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 100%;
-            transform: translate(-50%, -50%);
-            animation: ripple 0.5s linear;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
         }
 
-        @keyframes ripple {
-            to {
-                width: 200%;
-                height: 200%;
-                opacity: 0;
-            }
+        .btn-primary-hero:hover::before {
+            left: 100%;
         }
 
-        .hero-img {
-            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.12));
-            border-radius: 1rem;
+        .btn-primary-hero:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+            color: var(--primary-color);
+        }
+
+        .btn-outline-hero {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-outline-hero:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline-hero:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--muted-text);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .feature-card {
-            background: #fff;
-            border: none;
-            border-radius: 1rem;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            height: 100%;
         }
 
         .feature-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 8px 32px rgba(13, 110, 253, 0.13);
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
         }
 
         .feature-icon {
-            font-size: 2.5rem;
-            color: #0d6efd;
-            margin-bottom: 0.5rem;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+            background: var(--gradient-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        .feature-description {
+            color: var(--muted-text);
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-icon {
-            font-size: 2.2rem;
-            color: #0d6efd;
-            margin-bottom: 0.3rem;
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
         }
 
-        .hello-bar {
-            background: linear-gradient(90deg, #e0e7ff 0%, #f8fafc 100%);
-            border-radius: 8px;
-            padding: 1rem 2rem;
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--muted-text);
+            font-weight: 500;
+        }
+
+        /* Recent Section */
+        .recent-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .recent-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            height: 100%;
+        }
+
+        .recent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .recent-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid var(--primary-light);
+        }
+
+        .recent-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .recent-details {
+            font-size: 0.9rem;
+            color: var(--muted-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .recent-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 0;
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
             margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-text);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 12px rgba(13, 110, 253, 0.07);
+            justify-content: center;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
         }
 
-        .testimonial-img {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #0d6efd;
+        .social-link:hover {
+            transform: translateY(-3px);
+            background: var(--secondary-color);
+            color: white;
         }
 
-        .gradient-btn {
-            background: linear-gradient(90deg, #0d6efd 60%, #6ea8fe 100%);
-            border: none;
-            color: #fff;
-            font-weight: 600;
-            border-radius: 2rem;
-            padding: 0.75rem 2.5rem;
-            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.13);
-            transition: background 0.2s, box-shadow 0.2s;
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            text-align: center;
+            opacity: 0.7;
         }
 
-        .gradient-btn:hover {
-            background: linear-gradient(90deg, #6ea8fe 0%, #0d6efd 100%);
-            box-shadow: 0 8px 32px rgba(13, 110, 253, 0.18);
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-stats {
+                gap: 1rem;
+            }
+
+            .hero-stat {
+                min-width: 100px;
+                padding: 1rem;
+            }
+
+            .hero-stat-value {
+                font-size: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn-hero {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .feature-card {
+                padding: 2rem;
+            }
+
+            .stat-card {
+                margin-bottom: 1rem;
+            }
         }
 
-        .carousel-indicators [data-bs-target] {
-            background-color: #0d6efd;
-        }
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
 
-        .gradient-btn,
-        .btn,
-        button {
-            border-radius: 10px !important;
+            .hero-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-stat {
+                width: 100%;
+                max-width: 200px;
+            }
         }
     </style>
 </head>
 
 <body>
     <!-- Hero Section -->
-    <section class="container py-5 my-5 hero-bg lazy-section" data-section="hero">
-        <div class="row align-items-center px-4 py-5">
-            <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
-                <h1 class="fw-bold mb-4 display-5">Your Gateway to <span style="color:#ffe066;">Career Opportunities
-                    </span>
-                </h1>
-                <h5 class="mb-4" style="color:#e0e7ff;">Connecting students and recruiters for a brighter future.
-                </h5>
-                <a href="opportunities.php" class="gradient-btn mb-3">Find Opportunities</a>
-            </div>
-            <div class="col-lg-6 text-center">
-                <img src="https://via.placeholder.com/500x300?text=Placement+Portal" class="img-fluid hero-img mb-3"
-                    alt="Hero Image">
-            </div>
-        </div>
-    </section>
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Connect, Grow, Succeed</h1>
+                        <p class="hero-subtitle">
+                            Empowering students and companies to build meaningful connections.
+                            Discover opportunities, showcase talents, and accelerate your career journey.
+                        </p>
 
-    <!-- Hello Bar / Interactive Widget -->
-    <div class="container mb-5 lazy-section" data-section="hello-bar">
-        <div class="hello-bar mb-4">
-            <span class="fw-semibold"><i class="bi bi-lightbulb me-2"></i>Not sure where to start? <a
-                    href="fit-calculator.php" class="link-primary">Calculate Your Fit</a></span>
-            <a href="chat.php" class="btn btn-outline-primary btn-sm"><i class="bi bi-chat-dots me-1"></i>Live Chat</a>
-        </div>
-    </div>
-
-    <!-- Search Bar -->
-    <section class="container mb-5 pb-3 lazy-section" data-section="search">
-        <form class="d-flex justify-content-center gap-3" action="search.php" method="get">
-            <input class="form-control form-control-lg w-50 me-2 shadow-sm" type="search" name="q"
-                placeholder="Search placements, companies, or resources..." aria-label="Search">
-            <button class="gradient-btn" type="submit">Search</button>
-        </form>
-    </section>
-
-    <!-- Key Features / Value Highlights -->
-    <section class="container mb-5 pb-3 lazy-section" data-section="features">
-        <h2 class="text-center mb-5 section-title">Why Choose Us?</h2>
-        <div class="row g-4 text-center">
-            <div class="col-md-4">
-                <div class="card feature-card h-100 py-5 px-3">
-                    <div class="feature-icon mb-3"><i class="bi bi-stars"></i></div>
-                    <h5 class="mb-3">Smart Matching Algorithm</h5>
-                    <p class="text-muted mb-0">Get personalized job recommendations based on your skills and interests.
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card feature-card h-100 py-5 px-3">
-                    <div class="feature-icon mb-3"><i class="bi bi-shield-check"></i></div>
-                    <h5 class="mb-3">Verified Employers</h5>
-                    <p class="text-muted mb-0">Connect only with trusted and verified companies for safe placements.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card feature-card h-100 py-5 px-3">
-                    <div class="feature-icon mb-3"><i class="bi bi-clipboard-data"></i></div>
-                    <h5 class="mb-3">Track Applications</h5>
-                    <p class="text-muted mb-0">Easily monitor your application status and interview schedules in one
-                        place.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats & Testimonials -->
-    <section class="container mb-5 pb-3 lazy-section" data-section="stats">
-        <h2 class="text-center mb-5 section-title">Our Impact</h2>
-        <div class="row align-items-center gy-5">
-            <div class="col-md-6 mb-4 mb-md-0">
-                <div class="row text-center g-4">
-                    <div class="col-6 mb-4">
-                        <div class="stat-icon mb-2"><i class="bi bi-briefcase-fill"></i></div>
-                        <h2 class="fw-bold mb-1">500+</h2>
-                        <span class="text-muted">Placements</span>
-                    </div>
-                    <div class="col-6 mb-4">
-                        <div class="stat-icon mb-2"><i class="bi bi-building"></i></div>
-                        <h2 class="fw-bold mb-1">200+</h2>
-                        <span class="text-muted">Partner Companies</span>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-icon mb-2"><i class="bi bi-bar-chart-line-fill"></i></div>
-                        <h2 class="fw-bold mb-1">95%</h2>
-                        <span class="text-muted">Success Rate</span>
-                    </div>
-                    <div class="col-6">
-                        <div class="stat-icon mb-2"><i class="bi bi-clock-history"></i></div>
-                        <h2 class="fw-bold mb-1">24/7</h2>
-                        <span class="text-muted">Support</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <!-- Testimonial Carousel -->
-                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div class="card shadow-sm p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="https://randomuser.me/api/portraits/men/32.jpg"
-                                        class="testimonial-img me-3" alt="Student">
-                                    <div>
-                                        <strong>Rahul Sharma</strong><br>
-                                        <span class="text-muted" style="font-size: 0.9em;">Placed at Infosys</span>
-                                    </div>
-                                </div>
-                                <p class="mb-0">“The portal made my placement journey smooth and stress-free. I found my
-                                    dream job in just a few clicks!”</p>
+                        <div class="hero-stats">
+                            <div class="hero-stat">
+                                <div class="hero-stat-value"><?php echo number_format($totalStudents); ?>+</div>
+                                <div class="hero-stat-label">Students</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-value"><?php echo number_format($totalCompanies); ?>+</div>
+                                <div class="hero-stat-label">Companies</div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-value"><?php echo number_format($totalCoordinators); ?>+</div>
+                                <div class="hero-stat-label">Coordinators</div>
                             </div>
                         </div>
-                        <div class="carousel-item">
-                            <div class="card shadow-sm p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="https://randomuser.me/api/portraits/women/44.jpg"
-                                        class="testimonial-img me-3" alt="Student">
-                                    <div>
-                                        <strong>Priya Verma</strong><br>
-                                        <span class="text-muted" style="font-size: 0.9em;">Placed at TCS</span>
-                                    </div>
-                                </div>
-                                <p class="mb-0">“Great experience! The smart matching feature helped me discover roles I
-                                    never thought of.”</p>
+
+                        <div class="hero-buttons">
+                            <a href="auth/login.php" class="btn-hero btn-primary-hero">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Get Started
+                            </a>
+                            <a href="#features" class="btn-hero btn-outline-hero">
+                                <i class="fas fa-info-circle"></i>
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="text-center">
+                        <img src="assets/images/hero-illustration.svg" alt="Placement Portal" class="img-fluid"
+                            style="max-width: 500px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Why Choose Our Platform?</h2>
+                <p class="section-subtitle">
+                    Experience a comprehensive placement solution designed to bridge the gap between talented students
+                    and innovative companies.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">Smart Matching</h3>
+                        <p class="feature-description">
+                            Advanced algorithms match students with companies based on skills, preferences, and
+                            requirements for optimal placement success.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">Analytics Dashboard</h3>
+                        <p class="feature-description">
+                            Comprehensive analytics and insights help track placement progress, success rates, and
+                            performance metrics.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Secure & Reliable</h3>
+                        <p class="feature-description">
+                            Enterprise-grade security ensures your data is protected with advanced encryption and
+                            privacy controls.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Mobile Friendly</h3>
+                        <p class="feature-description">
+                            Access the platform from anywhere with our responsive design that works seamlessly on all
+                            devices.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3 class="feature-title">24/7 Support</h3>
+                        <p class="feature-description">
+                            Round-the-clock support ensures you get help whenever you need it with our dedicated support
+                            team.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="feature-title">Fast & Efficient</h3>
+                        <p class="feature-description">
+                            Streamlined processes and automated workflows make placement management faster and more
+                            efficient.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-title">Platform Statistics</h2>
+                <p class="section-subtitle">
+                    Real-time data showcasing the success and growth of our placement platform.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-number"><?php echo number_format($totalStudents); ?>+</div>
+                        <div class="stat-label">Active Students</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="stat-number"><?php echo number_format($totalCompanies); ?>+</div>
+                        <div class="stat-label">Partner Companies</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-number"><?php echo number_format($totalCoordinators); ?>+</div>
+                        <div class="stat-label">Coordinators</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Students Section -->
+    <?php if (!empty($recentStudents)): ?>
+        <section class="recent-section">
+            <div class="container">
+                <div class="section-header" data-aos="fade-up">
+                    <h2 class="section-title">Recent Students</h2>
+                    <p class="section-subtitle">
+                        Meet some of our talented students who are ready to make their mark in the industry.
+                    </p>
+                </div>
+
+                <div class="row g-4">
+                    <?php foreach ($recentStudents as $index => $student): ?>
+                        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo $index * 100; ?>">
+                            <div class="recent-card">
+                                <img src="<?php echo BASE_URL . 'uploads/auth/' . ($student['userimage'] ?: 'unkown.png'); ?>"
+                                    alt="<?php echo htmlspecialchars($student['firstname']); ?>" class="recent-avatar">
+                                <h4 class="recent-name">
+                                    <?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></h4>
+                                <p class="recent-details"><?php echo htmlspecialchars($student['branch']); ?></p>
+                                <span class="recent-badge">CGPA: <?php echo number_format($student['cgpa'], 2); ?></span>
                             </div>
                         </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel"
-                        data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel"
-                        data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    <?php endif; ?>
 
-    <!-- Upcoming Placement Drives Section -->
-    <section class="container mb-5 pb-3 lazy-section" data-section="drives">
-        <h2 class="mb-5 text-center section-title">Upcoming Placement Drives</h2>
-        <div class="row justify-content-center g-4">
-            <div class="col-md-3">
-                <div class="card h-100 border-0 shadow-sm text-center">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">Infosys</h5>
-                        <p class="card-text mb-1"><i class="bi bi-calendar-event me-2"></i>25 July 2025</p>
-                        <span class="badge bg-info text-dark mb-2">Software Engineer</span>
-                        <p class="text-muted small">Technologies: Java, Python</p>
-                        <a href="drive-details.php?id=1" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                    </div>
+    <!-- Recent Companies Section -->
+    <?php if (!empty($recentCompanies)): ?>
+        <section class="recent-section" style="background: var(--light-bg);">
+            <div class="container">
+                <div class="section-header" data-aos="fade-up">
+                    <h2 class="section-title">Partner Companies</h2>
+                    <p class="section-subtitle">
+                        Leading companies that trust our platform for finding exceptional talent.
+                    </p>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 border-0 shadow-sm text-center">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">TCS</h5>
-                        <p class="card-text mb-1"><i class="bi bi-calendar-event me-2"></i>30 July 2025</p>
-                        <span class="badge bg-info text-dark mb-2">System Analyst</span>
-                        <p class="text-muted small">Technologies: C++, SQL</p>
-                        <a href="drive-details.php?id=2" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 border-0 shadow-sm text-center">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">Capgemini</h5>
-                        <p class="card-text mb-1"><i class="bi bi-calendar-event me-2"></i>5 August 2025</p>
-                        <span class="badge bg-info text-dark mb-2">Data Analyst</span>
-                        <p class="text-muted small">Technologies: Python, PowerBI</p>
-                        <a href="drive-details.php?id=3" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 border-0 shadow-sm text-center">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2">Wipro</h5>
-                        <p class="card-text mb-1"><i class="bi bi-calendar-event me-2"></i>10 August 2025</p>
-                        <span class="badge bg-info text-dark mb-2">Web Developer</span>
-                        <p class="text-muted small">Technologies: HTML, CSS, JS</p>
-                        <a href="drive-details.php?id=4" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Newsletter Signup Section -->
-    <section class="container mb-5 pb-5 lazy-section" data-section="newsletter">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm p-4 text-center">
-                    <h4 class="mb-3">Stay Updated!</h4>
-                    <p class="mb-4 text-muted">Subscribe to our newsletter for the latest placement drives, tips, and
-                        resources.</p>
-                    <form class="row g-2 justify-content-center">
-                        <div class="col-md-8">
-                            <input type="email" class="form-control form-control-lg" placeholder="Enter your email"
-                                required>
+                <div class="row g-4">
+                    <?php foreach ($recentCompanies as $index => $company): ?>
+                        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="<?php echo $index * 100; ?>">
+                            <div class="recent-card">
+                                <img src="<?php echo BASE_URL . 'uploads/auth/' . ($company['userimage'] ?: 'unkown.png'); ?>"
+                                    alt="<?php echo htmlspecialchars($company['cname']); ?>" class="recent-avatar">
+                                <h4 class="recent-name"><?php echo htmlspecialchars($company['cname']); ?></h4>
+                                <p class="recent-details"><?php echo htmlspecialchars($company['ctype']); ?></p>
+                                <span class="recent-badge"><?php echo htmlspecialchars($company['csize']); ?> employees</span>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="gradient-btn w-100 py-2">Subscribe</button>
-                        </div>
-                    </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content" data-aos="fade-up">
+                <h2 class="cta-title">Ready to Get Started?</h2>
+                <p class="cta-description">
+                    Join thousands of students and companies who have already discovered the power of our placement
+                    platform.
+                </p>
+                <div class="hero-buttons justify-content-center">
+                    <a href="auth/register.php" class="btn-hero btn-primary-hero">
+                        <i class="fas fa-user-plus"></i>
+                        Register Now
+                    </a>
+                    <a href="auth/login.php" class="btn-hero btn-outline-hero">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Final CTA -->
-    <section class="container text-center mb-5 pb-5 lazy-section" data-section="cta">
-        <h2 class="fw-bold mb-4">Ready to Start Your Journey?</h2>
-        <a href="register.php" class="gradient-btn px-5 py-3">Sign Up Free</a>
-    </section>
+    <!-- Footer
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h3 class="footer-title">Placement Portal</h3>
+                <p class="footer-description">
+                    Connecting talent with opportunity. Empowering the future of work through innovative placement
+                    solutions.
+                </p>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>&copy; 2024 Placement Portal. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer> -->
+    <?php include './components/footer.php'; ?>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <script>
-        // Lazy load animation for sections
-        document.addEventListener("DOMContentLoaded", function() {
-            const lazySections = document.querySelectorAll('.lazy-section');
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('loaded');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.15
-            });
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
 
-            lazySections.forEach(section => observer.observe(section));
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
         });
     </script>
 </body>
 
 </html>
-<?php
-require_once './components/footer.php';
-?>

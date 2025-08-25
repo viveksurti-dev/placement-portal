@@ -155,6 +155,15 @@ $page = $_GET['p'] ?? '';
                 case 'managecordinators/':
                     require_once './manageCoordinator.php';
                     break;
+                case 'editstudent/':
+                    require_once './editStudent.php';
+                    break;
+                case 'editcompany/':
+                    require_once './editCompany.php';
+                    break;
+                case 'editcoordinator/':
+                    require_once './editCoordinator.php';
+                    break;
                 default:
                     echo 'Page Not Found';
             }
